@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 3: Data Types and User Input in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === BASE THEME & VARIABLES === */
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151b2b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-cyan: #00f0ff;
+            --accent-blue: #3b82f6;
+            --accent-pink: #ec4899;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --code-bg: #0d1117;
+            --border-color: #334155;
+        }
+
+        /* === GLOBAL STYLES === */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 0;
+            font-weight: 700;
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p { margin-bottom: 1.2rem; }
+        
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        li { margin-bottom: 0.5rem; }
+
+        /* === LAYOUT & HEADER === */
+        header {
+            background: linear-gradient(180deg, #0f172a 0%, var(--bg-color) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle coding-themed background */
+        header::before {
+            content: 'int float string cin cout >> <<';
+            position: absolute;
+            font-size: 80px;
+            color: rgba(0, 240, 255, 0.03);
+            font-family: monospace;
+            font-weight: bold;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* === LEARNING CARDS === */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #475569;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        /* === VISUAL DIAGRAMS === */
+        .diagram-container {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 30px 20px;
+            margin: 20px 0;
+            border: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-x: auto;
+        }
+
+        svg { max-width: 100%; height: auto; }
+
+        /* === CODE EDITOR STYLE === */
+        .code-window {
+            background: var(--code-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .code-dots { display: flex; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #eab308; }
+        .dot.green { background: #22c55e; }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: #ff7b72; font-weight: bold; } /* keyword */
+        .fn { color: #d2a8ff; } /* function */
+        .str { color: #a5d6ff; } /* string */
+        .num { color: #79c0ff; } /* number */
+        .op { color: var(--accent-cyan); } /* operator */
+        .cmt { color: #8b949e; font-style: italic; } /* comment */
+        .type { color: #ff7b72; font-weight: bold; } /* variable type */
+        .var { color: #c9d1d9; } /* variable name */
+
+        /* === BUTTONS & INTERACTIVITY === */
+        button { font-family: inherit; cursor: pointer; }
+
+        .btn-copy {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+
+        .btn-copy.copied {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .exercise-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-box h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        .btn-hint {
+            background: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-hint:hover { background: #334155; }
+
+        .hint-content {
+            display: none;
+            background: rgba(0, 240, 255, 0.1);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === FOOTER & NAVIGATION === */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-nav:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .btn-nav-prev {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+        }
+        .btn-nav-prev:hover { background: #334155; }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            background: #0b0f19;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            pre { font-size: 0.9rem; }
+            .nav-container { flex-direction: column; gap: 15px; }
+            .btn-nav { text-align: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\'><text x=\'0\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2300f0ff\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 3</h1>
+            <p style="color: var(--accent-cyan); font-size: 1.2rem; margin-top: 0;">Data Types and User Input in C++</p>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to Session 3! Up until now, our programs have been a little... bossy. They just print out whatever <em>we</em> typed in the code. Today, we change that! We are going to make our programs interactive. In this session, you will learn:</p>
+            <ul>
+                <li>Why not all data is treated the same by a computer.</li>
+                <li>The different <strong>Data Types</strong> in C++ (like numbers, text, and true/false).</li>
+                <li>How to use <strong><code>cin</code></strong> to ask the user to type something on their keyboard.</li>
+                <li>How to build your very first interactive program!</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left: 4px solid var(--accent-yellow);">
+            <h2 style="color: var(--accent-yellow); border-bottom-color: var(--accent-yellow);">⏪ Session 2 Recap</h2>
+            <p>Let's do a quick memory refresh from our last session:</p>
+            <ul>
+                <li>A <strong>variable</strong> is like a labeled cardboard box in the computer's memory.</li>
+                <li>We use variables to <strong>store data</strong> so the computer can remember it later.</li>
+                <li>We use <code>cout</code> to print the data hidden inside those variable boxes.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>🧩 Why Do Data Types Exist?</h2>
+            <p>Imagine organizing your closet. You wouldn't put dirty shoes in the same drawer as your clean t-shirts, right? You use different spaces for different things.</p>
+            <p>Computers do the exact same thing with memory. Not all data is the same!</p>
+            <ul>
+                <li>Your <strong>Age</strong> is a number (e.g., 15).</li>
+                <li>Your <strong>Name</strong> is text (e.g., "Ahmed").</li>
+                <li>Your <strong>Game Score</strong> is a number (e.g., 9500).</li>
+                <li>A <strong>Temperature</strong> is a decimal number (e.g., 36.5).</li>
+                <li>Whether your character is <strong>Alive or Dead</strong> is a true/false question.</li>
+            </ul>
+            <p>Because these are all different, a programming language needs to know <em>exactly</em> what type of data you are trying to store. A <strong>Data Type</strong> is just a label that tells the computer: <em>"Hey, this box is only for whole numbers!"</em></p>
+        </section>
+
+        <section class="card">
+            <h2>🏷️ Introduction to C++ Data Types</h2>
+            <p>C++ has specific keywords for different data types. Here are the 5 most important ones you need to know:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                    <strong style="color: var(--accent-cyan); font-family: monospace; font-size: 1.2rem;">int</strong><br>
+                    Stands for <em>Integer</em>. Used for <strong>whole numbers</strong>.<br>
+                    <em>Example:</em> 10, -5, 1000
+                </div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                    <strong style="color: var(--accent-cyan); font-family: monospace; font-size: 1.2rem;">float</strong><br>
+                    Used for <strong>decimal numbers</strong>.<br>
+                    <em>Example:</em> 3.14, 99.9, -0.5
+                </div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                    <strong style="color: var(--accent-cyan); font-family: monospace; font-size: 1.2rem;">char</strong><br>
+                    Stands for <em>Character</em>. Stores a <strong>single letter</strong> or symbol inside single quotes.<br>
+                    <em>Example:</em> 'A', 'z', '?'
+                </div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                    <strong style="color: var(--accent-cyan); font-family: monospace; font-size: 1.2rem;">string</strong><br>
+                    Used for <strong>text</strong> (multiple characters). Always inside double quotes.<br>
+                    <em>Example:</em> "TechTicket", "Hello!"
+                </div>
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid var(--accent-blue);">
+                    <strong style="color: var(--accent-cyan); font-family: monospace; font-size: 1.2rem;">bool</strong><br>
+                    Stands for <em>Boolean</em>. Can only be <strong>true</strong> or <strong>false</strong>.<br>
+                    <em>Example:</em> true, false
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>👀 Visualizing Data Types in Memory</h2>
+            <p>When you create variables with different types, this is how your computer's memory looks:</p>
+            
+            <div class="diagram-container">
+                <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="50" width="110" height="90" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <rect x="20" y="50" width="110" height="30" rx="8" fill="#3b82f6" opacity="0.2"/>
+                    <text x="75" y="70" fill="#fff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">int score</text>
+                    <text x="75" y="115" fill="#3b82f6" font-family="sans-serif" font-size="28" font-weight="bold" text-anchor="middle">100</text>
+
+                    <rect x="150" y="50" width="110" height="90" rx="8" fill="#1e293b" stroke="#ec4899" stroke-width="2"/>
+                    <rect x="150" y="50" width="110" height="30" rx="8" fill="#ec4899" opacity="0.2"/>
+                    <text x="205" y="70" fill="#fff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">float temp</text>
+                    <text x="205" y="115" fill="#ec4899" font-family="sans-serif" font-size="26" font-weight="bold" text-anchor="middle">36.5</text>
+
+                    <rect x="280" y="50" width="110" height="90" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+                    <rect x="280" y="50" width="110" height="30" rx="8" fill="#f59e0b" opacity="0.2"/>
+                    <text x="335" y="70" fill="#fff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">char grade</text>
+                    <text x="335" y="115" fill="#f59e0b" font-family="sans-serif" font-size="28" font-weight="bold" text-anchor="middle">'A'</text>
+
+                    <rect x="410" y="50" width="120" height="90" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <rect x="410" y="50" width="120" height="30" rx="8" fill="#10b981" opacity="0.2"/>
+                    <text x="470" y="70" fill="#fff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">string name</text>
+                    <text x="470" y="115" fill="#10b981" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">"Ali"</text>
+
+                    <rect x="550" y="50" width="130" height="90" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+                    <rect x="550" y="50" width="130" height="30" rx="8" fill="#8b5cf6" opacity="0.2"/>
+                    <text x="615" y="70" fill="#fff" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">bool isWinner</text>
+                    <text x="615" y="115" fill="#8b5cf6" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">true</text>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💻 Seeing Data Types in Action</h2>
+            <p>Here is what all those different variable types look like when we type them into Visual Studio Code!</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>main.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><code><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// 1. Creating the variables with different types</span>
+    <span class="type">int</span> <span class="var">score</span> <span class="op">=</span> <span class="num">100</span>;
+    <span class="type">float</span> <span class="var">temperature</span> <span class="op">=</span> <span class="num">36.5</span>;
+    <span class="type">char</span> <span class="var">grade</span> <span class="op">=</span> <span class="str">'A'</span>;
+    <span class="type">string</span> <span class="var">name</span> <span class="op">=</span> <span class="str">"Ali"</span>;
+    <span class="type">bool</span> <span class="var">isWinner</span> <span class="op">=</span> <span class="kw">true</span>;
+
+    <span class="cmt">// 2. Printing them out</span>
+    cout <span class="op">&lt;&lt;</span> <span class="var">score</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="var">temperature</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="var">grade</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="var">name</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="var">isWinner</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);"><em>Fun Fact: When you print a `bool` (true/false) in C++, the screen will usually show a `1` for true, and a `0` for false! Computers love binary.</em></p>
+        </section>
+
+        <section class="card">
+            <h2>🎤 User Input with <code>cin</code></h2>
+            <p>So far, our programs just talk to us using <code>cout</code>. But real programs are interactive—they listen! When you play a game, it asks for your username. When you use a calculator, it asks for numbers.</p>
+            <p>To make our C++ program <strong>listen</strong> to the keyboard, we use the <strong><code>cin</code></strong> (pronounced "See-In") command.</p>
+
+            <div class="diagram-container" style="background: rgba(34, 211, 238, 0.05);">
+                <h4 style="margin-top: 0; color: var(--accent-cyan); text-align: center;">The Input Flow</h4>
+                <svg viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="50" y="50" width="100" height="50" rx="5" fill="#334155"/>
+                    <text x="100" y="80" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Keyboard</text>
+                    
+                    <path d="M 160 75 L 240 75" stroke="#00f0ff" stroke-width="4" marker-end="url(#arrow)"/>
+                    <text x="200" y="65" fill="#00f0ff" font-family="monospace" font-weight="bold" font-size="16" text-anchor="middle">cin >></text>
+
+                    <rect x="250" y="40" width="100" height="70" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="300" y="65" fill="#94a3b8" font-family="monospace" font-size="12" text-anchor="middle">Variable</text>
+                    <text x="300" y="90" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="16" text-anchor="middle">name</text>
+
+                    <path d="M 360 75 L 440 75" stroke="#10b981" stroke-width="4" marker-end="url(#arrow-green)"/>
+                    <text x="400" y="65" fill="#10b981" font-family="monospace" font-weight="bold" font-size="16" text-anchor="middle">cout &lt;&lt;</text>
+
+                    <rect x="450" y="40" width="100" height="70" rx="5" fill="#0d1117" stroke="#fff" stroke-width="2"/>
+                    <text x="500" y="80" fill="#10b981" font-family="monospace" font-weight="bold" font-size="14" text-anchor="middle">Screen</text>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#00f0ff" />
+                        </marker>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💬 Your First Interactive Program</h2>
+            <p>Let's write a program that asks the user for their name and age, and then talks back to them!</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>main.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code2', this)">Copy Code</button>
+                </div>
+<pre id="code2"><code><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// 1. Create empty boxes (variables) to hold the user's answers</span>
+    <span class="type">string</span> <span class="var">name</span>;
+    <span class="type">int</span> <span class="var">age</span>;
+
+    <span class="cmt">// 2. Ask the user for their name</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Enter your name: "</span>;
+    cin <span class="op">&gt;&gt;</span> <span class="var">name</span>;
+
+    <span class="cmt">// 3. Ask the user for their age</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Enter your age: "</span>;
+    cin <span class="op">&gt;&gt;</span> <span class="var">age</span>;
+
+    <span class="cmt">// 4. Print a custom message using their data!</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Hello "</span> <span class="op">&lt;&lt;</span> <span class="var">name</span> <span class="op">&lt;&lt;</span> endl;
+    cout <span class="op">&lt;&lt;</span> <span class="str">"You are "</span> <span class="op">&lt;&lt;</span> <span class="var">age</span> <span class="op">&lt;&lt;</span> <span class="str">" years old!"</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🔍 Code Breakdown</h2>
+            <p>Let's look at exactly what happened above:</p>
+            <ul>
+                <li><code><span class="type">string</span> <span class="var">name</span>;</code> <br>
+                <span style="color: var(--text-muted)">We created a box named `name`. Notice we didn't put anything in it yet using <code>=</code>! It's completely empty, waiting for the user.</span></li>
+                
+                <li style="margin-top: 15px;"><code>cout <span class="op">&lt;&lt;</span> <span class="str">"Enter your name: "</span>;</code> <br>
+                <span style="color: var(--text-muted)">This prints a prompt on the screen so the user knows what they are supposed to do. If we didn't print this, the screen would just be a blank blinking cursor!</span></li>
+                
+                <li style="margin-top: 15px;"><code>cin <span class="op">&gt;&gt;</span> <span class="var">name</span>;</code> <br>
+                <span style="color: var(--text-muted)">This is the magic line. The program <strong>pauses</strong> and waits for the user to type something and press ENTER. Whatever they type gets shoved into the `name` variable. Note that <code>cin</code> uses arrows pointing RIGHT <code>&gt;&gt;</code> (into the variable), while <code>cout</code> uses arrows pointing LEFT <code>&lt;&lt;</code> (out to the screen).</span></li>
+            </ul>
+
+            <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent-green); padding: 15px; margin-top: 30px; border-radius: 0 8px 8px 0;">
+                <h4 style="color: var(--accent-green); margin-bottom: 5px;">🏧 Real-Life Analogy: The ATM Machine</h4>
+                <p style="margin: 0; font-size: 0.95rem;">Think of <code>cin</code> and <code>cout</code> like an ATM at a bank.<br><br>
+                1. <strong>cout</strong>: The ATM screen says "Please enter your PIN."<br>
+                2. <strong>cin</strong>: You type "1234" on the keypad.<br>
+                3. The ATM stores "1234" in its memory to check if it's correct.<br><br>
+                Your code is acting exactly like the brain of that ATM!</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Practice Exercises</h2>
+            <p>Fire up Visual Studio Code! Let's get some practice making the computer listen to you.</p>
+
+            <div class="exercise-box">
+                <h4>Exercise 1: The Greeter</h4>
+                <p>Write a program that asks the user for their name, and then prints out a nice greeting like: "Welcome to the matrix, [Name]!"</p>
+                <button class="btn-hint" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    You need 3 lines of code inside `main()`:<br>
+                    1. Create a `string` variable.<br>
+                    2. Use `cout` to ask for the name.<br>
+                    3. Use `cin >>` to save the name.
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 2: Age Verification</h4>
+                <p>Write a program that asks the user to type their age. Then, print: "Wow, you are [age] years old!"</p>
+                <button class="btn-hint" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    Because age is a number, make sure you create an `int` variable, not a `string`!<br>
+                    <code style="color: var(--accent-cyan);">int myAge;</code>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 3: Simple Math Setup</h4>
+                <p>Ask the user to enter a number, then ask them to enter a second number. Finally, print both numbers back out to them.</p>
+                <button class="btn-hint" onclick="toggleHint('hint3')">💡 Show Hint</button>
+                <div id="hint3" class="hint-content">
+                    You will need two separate integer variables! e.g., <code>int num1;</code> and <code>int num2;</code>. Use `cin` twice!
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: var(--accent-yellow); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.1);">
+            <h2 style="color: var(--accent-yellow); border-bottom-color: var(--accent-yellow);">🔥 Challenge Exercise</h2>
+            <p>Ready to combine multiple data types?</p>
+            <p>Create a small program that asks the user for:</p>
+            <ol>
+                <li>Their Name (string)</li>
+                <li>Their Favorite game (string)</li>
+            </ol>
+            <p>Then, make the computer print a sentence combining both pieces of information, like: <strong>"Ahmed loves playing Minecraft"</strong>.</p>
+            
+            <button class="btn-hint" style="border-color: var(--accent-yellow); color: var(--accent-yellow);" onclick="toggleHint('hint-challenge')">👀 See How to Chain cout</button>
+            <div id="hint-challenge" class="hint-content" style="border-color: var(--accent-yellow); background: rgba(245, 158, 11, 0.05);">
+                Remember you can chain multiple arrows together in one `cout`!<br><br>
+<pre style="background: #0d1117; padding: 10px; font-size: 0.9rem; border-radius: 5px; color: #fff;"><code>cout &lt;&lt; name &lt;&lt; " loves playing " &lt;&lt; game &lt;&lt; endl;</code></pre>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, var(--card-bg), #0f172a);">
+            <h2>🏠 Homework Assignment</h2>
+            <p>Before Session 4, you are going to write a "Digital Profile Creator". Write a fresh C++ program that asks the user to enter 4 things:</p>
+            <ul>
+                <li>Name (string)</li>
+                <li>Age (int)</li>
+                <li>Favorite food (string)</li>
+                <li>Favorite game (string)</li>
+            </ul>
+            <p>After collecting all the inputs, print out a full, beautifully formatted paragraph using all of their data. Save your code and be ready to share it!</p>
+        </section>
+
+        <section class="card">
+            <h2>✅ Session Summary</h2>
+            <ul>
+                <li><strong>Data Types</strong> tell the computer what kind of information is inside a variable.</li>
+                <li><strong>int</strong> = whole numbers, <strong>float</strong> = decimals, <strong>char</strong> = single letter, <strong>string</strong> = text, <strong>bool</strong> = true/false.</li>
+                <li><strong>cin</strong> is used to receive input from the user's keyboard.</li>
+                <li>The arrows for <code>cin</code> point <strong>RIGHT</strong> (<code>&gt;&gt;</code>), pushing data into the variable.</li>
+                <li>The arrows for <code>cout</code> point <strong>LEFT</strong> (<code>&lt;&lt;</code>), pushing data out to the screen.</li>
+            </ul>
+        </section>
+
+        <div class="nav-container">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session2.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session4.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Function to copy code to clipboard
+        function copyCode(elementId, button) {
+            const codeText = document.getElementById(elementId).innerText;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = button.innerText;
+                button.innerText = "Copied! ✔";
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code: ', err);
+                button.innerText = "Error!";
+            });
+        }
+
+        // Function to toggle hint visibility with smooth reveal
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

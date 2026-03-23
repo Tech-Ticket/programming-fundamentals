@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 8: Arrays in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === BASE VARIABLES === */
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151b2b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-cyan: #22d3ee;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --code-bg: #0d1117;
+            --border-color: #334155;
+            --font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* === GLOBAL RESET === */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4 { color: #ffffff; font-weight: 700; }
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        p { margin-bottom: 1.2rem; }
+        ul, ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+
+        /* === LAYOUT === */
+        .container { max-width: 850px; margin: 40px auto; padding: 0 20px; }
+
+        /* === HEADER === */
+        header {
+            background: linear-gradient(180deg, #0f172a 0%, var(--bg-color) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-bg {
+            position: absolute;
+            font-size: 100px;
+            color: rgba(34, 211, 238, 0.03);
+            font-family: monospace;
+            font-weight: bold;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .logo-container img { max-height: 80px; margin-bottom: 15px; transition: transform 0.3s ease; }
+        .logo-container img:hover { transform: scale(1.05); }
+        .course-badge {
+            display: inline-block;
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* === LEARNING CARDS === */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .card:hover { transform: translateY(-3px); border-color: #475569; }
+        .card:hover::before { opacity: 1; }
+
+        /* === DIAGRAMS === */
+        .diagram-container {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 30px 20px;
+            margin: 20px 0;
+            border: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-x: auto;
+        }
+        svg { max-width: 100%; height: auto; }
+
+        /* === CODE BLOCKS === */
+        .code-window {
+            background: var(--code-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .code-header {
+            background: #1e293b;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .code-dots { display: flex; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #10b981; }
+        pre { margin: 0; padding: 20px; overflow-x: auto; font-family: 'Fira Code', 'Consolas', monospace; font-size: 1.05rem; line-height: 1.5; }
+        
+        /* Syntax Highlighting */
+        .kw { color: #ff7b72; font-weight: bold; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .num { color: #79c0ff; }
+        .type { color: #ff7b72; font-weight: bold; }
+        .op { color: var(--accent-cyan); }
+        .cmt { color: #8b949e; font-style: italic; }
+
+        /* === BUTTONS & INTERACTIVITY === */
+        button { font-family: inherit; cursor: pointer; }
+        .btn-copy {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover { background: var(--accent-cyan); color: #000; }
+        .btn-copy.copied { background: var(--accent-green); border-color: var(--accent-green); color: white; }
+
+        .exercise-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .exercise-box h4 { color: var(--accent-blue); margin-bottom: 10px; }
+        
+        .btn-hint {
+            background: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-hint:hover { background: #334155; }
+        .hint-content {
+            display: none;
+            background: rgba(34, 211, 238, 0.1);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === FOOTER & NAVIGATION === */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-nav:hover { background: #2563eb; transform: scale(1.05); }
+        .btn-nav-prev { background: #1e293b; border: 1px solid var(--border-color); }
+        .btn-nav-prev:hover { background: #334155; }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            background: #0b0f19;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            .nav-container { flex-direction: column; gap: 15px; }
+            .btn-nav { text-align: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-bg">[0] [1] [2] [3] [4]</div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\'><text x=\'0\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2322d3ee\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 8</h1>
+            <p style="color: var(--accent-cyan); font-size: 1.2rem; margin-top: 0;">Arrays and Working with Multiple Values</p>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to Session 8! You've learned how to create variables to store single pieces of data. But what happens when you need to store the scores of an entire classroom of students?</p>
+            <p>In this session, we will learn how to group data together. You will learn:</p>
+            <ul>
+                <li>What an <strong>array</strong> is and why it's better than using a hundred normal variables.</li>
+                <li>How to create an array in C++ to store lists of data.</li>
+                <li>How to grab specific items out of that list using an <strong>index</strong> (and why programmers always start counting at zero!).</li>
+                <li>How to combine <strong>arrays</strong> and <strong>loops</strong> to build powerful data-processing programs.</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left: 4px solid var(--accent-yellow);">
+            <h2 style="color: var(--accent-yellow); border-bottom-color: var(--accent-yellow);">⏪ Session 7 Recap</h2>
+            <p>In our last session, we talked about organizing our code using <strong>Functions</strong>.</p>
+            <ul>
+                <li>Functions are custom mini-machines we build to do specific tasks.</li>
+                <li>They stop us from writing the same block of code over and over again.</li>
+                <li>We <strong>call</strong> a function from inside <code>main()</code> to make it run.</li>
+            </ul>
+            <p>Functions organize our <em>code</em>. Today, we learn how to organize our <em>data</em>.</p>
+        </section>
+
+        <section class="card">
+            <h2>😩 The Problem: Too Many Variables!</h2>
+            <p>Imagine you are making a game, and you need to store the top 5 high scores. Right now, you would have to do this:</p>
+            
+            <div class="code-window">
+<pre><span class="type">int</span> score1 <span class="op">=</span> <span class="num">10</span>;
+<span class="type">int</span> score2 <span class="op">=</span> <span class="num">20</span>;
+<span class="type">int</span> score3 <span class="op">=</span> <span class="num">30</span>;
+<span class="type">int</span> score4 <span class="op">=</span> <span class="num">40</span>;
+<span class="type">int</span> score5 <span class="op">=</span> <span class="num">50</span>;</pre>
+            </div>
+            
+            <p>That is messy! Now imagine if the game had 10,000 players. You cannot write 10,000 different variables. The code would be impossible to read and terrible to type. We need a way to group all these numbers under one single name.</p>
+        </section>
+
+        <section class="card">
+            <h2>📦 What is an Array?</h2>
+            <p>An <strong>array</strong> is a collection of variables of the same type, stored together in a single row under one name.</p>
+            <p>Instead of having 5 separate cardboard boxes scattered around your room, an array is like a single organizer box with 5 neat compartments inside it.</p>
+            
+            <div class="diagram-container">
+                <svg viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg">
+                    <text x="300" y="30" fill="#94a3b8" font-family="monospace" font-size="14" text-anchor="middle">Array Name: "numbers"</text>
+                    
+                    <rect x="50" y="50" width="500" height="60" fill="none" stroke="#3b82f6" stroke-width="4" rx="5"/>
+                    
+                    <rect x="50" y="50" width="100" height="60" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="2"/>
+                    <text x="100" y="90" fill="#fff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">10</text>
+                    <text x="100" y="135" fill="#22d3ee" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Index 0</text>
+
+                    <rect x="150" y="50" width="100" height="60" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="2"/>
+                    <text x="200" y="90" fill="#fff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">20</text>
+                    <text x="200" y="135" fill="#22d3ee" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Index 1</text>
+
+                    <rect x="250" y="50" width="100" height="60" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="2"/>
+                    <text x="300" y="90" fill="#fff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">30</text>
+                    <text x="300" y="135" fill="#22d3ee" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Index 2</text>
+
+                    <rect x="350" y="50" width="100" height="60" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="2"/>
+                    <text x="400" y="90" fill="#fff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">40</text>
+                    <text x="400" y="135" fill="#22d3ee" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Index 3</text>
+
+                    <rect x="450" y="50" width="100" height="60" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="2"/>
+                    <text x="500" y="90" fill="#fff" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">50</text>
+                    <text x="500" y="135" fill="#22d3ee" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Index 4</text>
+                </svg>
+            </div>
+            
+            <div style="background: rgba(34, 211, 238, 0.1); border-left: 4px solid var(--accent-cyan); padding: 15px; margin-top: 15px;">
+                <h4 style="color: var(--accent-cyan); margin-top: 0; margin-bottom: 5px;">⚠️ The Golden Rule of Programming</h4>
+                <p style="margin: 0; font-size: 0.95rem;">Look closely at the diagram above. Notice how the compartments are numbered: 0, 1, 2, 3, 4. <strong>Computers always start counting at ZERO!</strong> The first item in an array is at Index 0. The second item is at Index 1. This is confusing at first, but every programmer in the world has to get used to it!</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💻 Creating and Accessing Arrays in C++</h2>
+            <p>Let's turn that diagram into real C++ code. We will create the array, and then print the first and second numbers from it.</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>array_basics.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// Create an integer array named 'numbers' that holds 5 items.</span>
+    <span class="cmt">// We use curly braces {} to put the data inside it immediately.</span>
+    <span class="type">int</span> numbers[<span class="num">5</span>] <span class="op">=</span> {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+
+    <span class="cmt">// Access the elements using square brackets []</span>
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"The first number is: "</span> <span class="op">&lt;&lt;</span> numbers[<span class="num">0</span>] <span class="op">&lt;&lt;</span> endl;
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"The second number is: "</span> <span class="op">&lt;&lt;</span> numbers[<span class="num">1</span>] <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+            
+            <p><strong>Code Breakdown:</strong></p>
+            <ul>
+                <li><code>int numbers[5]</code> tells the computer: "Make an array named <em>numbers</em> that holds exactly 5 integers."</li>
+                <li>The numbers inside the square brackets <code>[ ]</code> are called the <strong>Index</strong>.</li>
+                <li><code>numbers[0]</code> opens the first compartment and finds the <code>10</code>.</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-green);">
+            <h2 style="color: var(--accent-green); border-bottom-color: rgba(16, 185, 129, 0.2);">🏫 Real-Life Analogy: Hallway Lockers</h2>
+            <p>Think about the row of lockers in a school hallway. They are all identical boxes lined up against the wall.</p>
+            <ul>
+                <li>The whole row of lockers is the <strong>Array</strong>.</li>
+                <li>The number painted on the outside of each locker is the <strong>Index</strong> (Locker 0, Locker 1, Locker 2).</li>
+                <li>The books and backpacks stored inside are the <strong>Values</strong>.</li>
+            </ul>
+            <p>If you tell a friend, "My math book is in Locker 3", they know exactly where to go. In C++, you say <code>cout &lt;&lt; lockers[3];</code> to get the same result!</p>
+        </section>
+
+        <section class="card">
+            <h2>🔄 The Perfect Match: Loops and Arrays</h2>
+            <p>Printing <code>numbers[0]</code>, <code>numbers[1]</code>, and so on manually is annoying. But remember the <code>for</code> loop we learned? A loop is basically an automatic counter.</p>
+            <p>If we use our loop counter variable (<code>i</code>) as the array Index, the loop will automatically walk through the entire array for us!</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>array_loop.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code2', this)">Copy Code</button>
+                </div>
+<pre id="code2"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="type">int</span> numbers[<span class="num">5</span>] <span class="op">=</span> {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+
+    <span class="cmt">// Start i at 0 (the first index).</span>
+    <span class="cmt">// Keep going while i is strictly less than 5 (which means it stops at 4!).</span>
+    <span class="kw">for</span>(<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>)
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> numbers[i] <span class="op">&lt;&lt;</span> endl;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+
+            <div class="diagram-container">
+                <h4 style="color: var(--text-muted); margin-bottom: 15px;">How the loop sees the array:</h4>
+                <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50" y="30" fill="#fff" font-family="monospace" font-size="16">Spin 1: i = 0  → numbers[0] = <tspan fill="#00f0ff">10</tspan></text>
+                    <text x="50" y="65" fill="#fff" font-family="monospace" font-size="16">Spin 2: i = 1  → numbers[1] = <tspan fill="#00f0ff">20</tspan></text>
+                    <text x="50" y="100" fill="#fff" font-family="monospace" font-size="16">Spin 3: i = 2  → numbers[2] = <tspan fill="#00f0ff">30</tspan></text>
+                    <text x="50" y="135" fill="#fff" font-family="monospace" font-size="16">Spin 4: i = 3  → numbers[3] = <tspan fill="#00f0ff">40</tspan></text>
+                    <text x="50" y="170" fill="#fff" font-family="monospace" font-size="16">Spin 5: i = 4  → numbers[4] = <tspan fill="#00f0ff">50</tspan></text>
+                </svg>
+            </div>
+            <p>Notice that our loop condition is <code>i < 5</code>. Since we start at 0, the numbers 0, 1, 2, 3, 4 are exactly 5 loops! The loop stops before <code>i</code> becomes 5, which is perfect because <code>numbers[5]</code> does not exist!</p>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Practice Exercises</h2>
+            <p>Open Visual Studio Code and build these arrays!</p>
+
+            <div class="exercise-box">
+                <h4>Exercise 1: Simple Creation</h4>
+                <p>Create an array called <code>ages</code> that holds 5 different ages. Print only the very first age in the array to the screen.</p>
+                <button class="btn-hint" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    <code>int ages[5] = {12, 14, 15, 13, 16};</code><br>
+                    Remember, the first item is at index <code>[0]</code>!
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 2: The Loop Printer</h4>
+                <p>Take the <code>ages</code> array from Exercise 1 and write a <code>for</code> loop to print <em>every</em> age in the array, one by one.</p>
+                <button class="btn-hint" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    Your loop should look like: <code>for(int i = 0; i < 5; i++)</code>.<br>
+                    Inside the loop, use <code>cout &lt;&lt; ages[i];</code>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 3: String Arrays</h4>
+                <p>Arrays don't have to be numbers! Create an array of 3 <code>string</code> variables to hold names (e.g., "Ahmed", "Sara", "Omar"). Print the 3rd name in the list.</p>
+                <button class="btn-hint" onclick="toggleHint('hint3')">💡 Show Hint</button>
+                <div id="hint3" class="hint-content">
+                    <code>string names[3] = {"Ahmed", "Sara", "Omar"};</code><br>
+                    To print the 3rd name, what index do you use? (Hint: It's not 3!) It's <code>names[2]</code>!
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: #8b5cf6; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);">
+            <h2 style="color: #8b5cf6; border-bottom-color: rgba(139, 92, 246, 0.2);">🔥 Challenge Exercise: Array Math</h2>
+            <p>Create a program that stores 5 numbers in an array. Create an integer variable called <code>totalSum</code> and set it to 0.</p>
+            <p>Use a <code>for</code> loop to go through the array and add each number to the <code>totalSum</code>. Finally, print the <code>totalSum</code>.</p>
+            
+            <button class="btn-hint" style="border-color: #8b5cf6; color: #8b5cf6;" onclick="toggleHint('hint4')">👀 See Solution Logic</button>
+            <div id="hint4" class="hint-content" style="border-left-color: #8b5cf6;">
+<pre style="background:transparent; padding:0; margin:0;"><span class="type">int</span> totalSum <span class="op">=</span> <span class="num">0</span>;
+<span class="kw">for</span>(<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>) {
+    totalSum <span class="op">=</span> totalSum <span class="op">+</span> numbers[i];
+}
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> totalSum;</pre>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, var(--card-bg) 0%, #172439 100%);">
+            <h2>🏠 Homework Assignment</h2>
+            <p>Write a program that acts like a teacher's gradebook!</p>
+            <ol>
+                <li>Create a <code>float</code> array called <code>scores</code> that holds 5 test scores (like 95.5, 80.0, etc.).</li>
+                <li>Write a <code>for</code> loop to print out every score.</li>
+                <li>Make the output look nice! It should print: <code>"Student 1 score: 95.5"</code>, then <code>"Student 2 score: 80.0"</code>.</li>
+            </ol>
+            <p><em>Tricky Hint:</em> The array index is <code>i</code> (which starts at 0), but your printout says "Student 1". How can you print the number 1 when the loop is on 0? You might need to print <code>(i + 1)</code>!</p>
+        </section>
+
+        <section class="card">
+            <h2>📝 Session Summary</h2>
+            <ul>
+                <li>An <strong>Array</strong> is a single variable that can hold a list of multiple values of the same type.</li>
+                <li>Arrays are created by putting the size inside square brackets: <code>int scores[5];</code></li>
+                <li>Each compartment in an array is numbered, starting at <strong>0</strong>. This number is called the <strong>Index</strong>.</li>
+                <li>You access the data by putting the index in brackets: <code>scores[0]</code> gives you the first item.</li>
+                <li><strong>Loops and Arrays are best friends.</strong> Using the loop's <code>i</code> variable as the index allows you to quickly process every item in an array automatically!</li>
+            </ul>
+        </section>
+
+        <div class="nav-container">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session7.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session9.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Copy Code Function
+        function copyCode(elementId, btn) {
+            const codeEl = document.getElementById(elementId);
+            const textToCopy = codeEl.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied! ✓";
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                btn.innerText = "Error!";
+            });
+        }
+
+        // Toggle Hint Function
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

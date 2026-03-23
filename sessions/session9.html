@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 9: Problem Solving with C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === BASE VARIABLES === */
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151b2b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-cyan: #22d3ee;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --code-bg: #0d1117;
+            --border-color: #334155;
+            --font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* === GLOBAL RESET === */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4 { color: #ffffff; font-weight: 700; }
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        p { margin-bottom: 1.2rem; }
+        ul, ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+
+        /* === LAYOUT === */
+        .container { max-width: 850px; margin: 40px auto; padding: 0 20px; }
+
+        /* === HEADER === */
+        header {
+            background: linear-gradient(180deg, #0f172a 0%, var(--bg-color) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        .header-bg {
+            position: absolute;
+            font-size: 120px;
+            color: rgba(34, 211, 238, 0.03);
+            font-family: monospace;
+            font-weight: bold;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .header-content { position: relative; z-index: 1; }
+        .logo-container img { max-height: 80px; margin-bottom: 15px; transition: transform 0.3s ease; }
+        .logo-container img:hover { transform: scale(1.05); }
+        .course-badge {
+            display: inline-block;
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* === LEARNING CARDS === */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .card:hover { transform: translateY(-3px); border-color: #475569; }
+        .card:hover::before { opacity: 1; }
+
+        /* === DIAGRAMS === */
+        .diagram-container {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 30px 20px;
+            margin: 20px 0;
+            border: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-x: auto;
+        }
+        svg { max-width: 100%; height: auto; }
+
+        /* === CODE BLOCKS === */
+        .code-window {
+            background: var(--code-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .code-header {
+            background: #1e293b;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .code-dots { display: flex; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #10b981; }
+        pre { margin: 0; padding: 20px; overflow-x: auto; font-family: 'Fira Code', 'Consolas', monospace; font-size: 1.05rem; line-height: 1.5; }
+        
+        /* Syntax Highlighting */
+        .kw { color: #ff7b72; font-weight: bold; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .num { color: #79c0ff; }
+        .type { color: #ff7b72; font-weight: bold; }
+        .op { color: var(--accent-cyan); }
+        .cmt { color: #8b949e; font-style: italic; }
+
+        /* === BUTTONS & INTERACTIVITY === */
+        button { font-family: inherit; cursor: pointer; }
+        .btn-copy {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover { background: var(--accent-cyan); color: #000; }
+        .btn-copy.copied { background: var(--accent-green); border-color: var(--accent-green); color: white; }
+
+        .exercise-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .exercise-box h4 { color: var(--accent-blue); margin-bottom: 10px; }
+        
+        .btn-hint {
+            background: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-hint:hover { background: #334155; }
+        .hint-content {
+            display: none;
+            background: rgba(34, 211, 238, 0.1);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === FOOTER & NAVIGATION === */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-nav:hover { background: #2563eb; transform: scale(1.05); }
+        .btn-nav-prev { background: #1e293b; border: 1px solid var(--border-color); }
+        .btn-nav-prev:hover { background: #334155; }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            background: #0b0f19;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            .nav-container { flex-direction: column; gap: 15px; }
+            .btn-nav { text-align: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-bg">{ Code ; Think ; Solve }</div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\'><text x=\'0\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2322d3ee\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 9</h1>
+            <p style="color: var(--accent-cyan); font-size: 1.2rem; margin-top: 0;">Problem Solving with C++</p>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to Session 9! You now have a giant toolbox of programming skills. But knowing how to use a hammer and a saw doesn't mean you know how to build a house.</p>
+            <p>In this session, we transition from just writing code to actually solving real problems. You will learn:</p>
+            <ul>
+                <li>How professional programmers think when faced with a brand new challenge.</li>
+                <li>How to break a massive, scary problem into tiny, easy steps.</li>
+                <li>How to write an "algorithm" (a recipe) before you even touch your keyboard.</li>
+                <li>How to combine Variables, Loops, If-Statements, and Arrays into one complete program!</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left: 4px solid var(--accent-purple);">
+            <h2 style="color: var(--accent-purple); border-bottom-color: var(--accent-purple);">⏪ The Ultimate Toolbelt Recap</h2>
+            <p>Before we start building, let's look at the tools you've collected in the past 8 sessions:</p>
+            <ul>
+                <li>📦 <strong>Variables & Data Types:</strong> Used to remember information (int, string, bool).</li>
+                <li>🎤 <strong>User Input (cin):</strong> Used to talk to the user and get their answers.</li>
+                <li>➕ <strong>Operators:</strong> Used to do math (+, -) or compare things (>, ==).</li>
+                <li>🚦 <strong>If Statements:</strong> Used to make decisions and branch the code.</li>
+                <li>🔁 <strong>Loops:</strong> Used to repeat actions automatically.</li>
+                <li>🤖 <strong>Functions:</strong> Used to organize code into reusable mini-machines.</li>
+                <li>🗄️ <strong>Arrays:</strong> Used to store a whole list of data under one name.</li>
+            </ul>
+            <p>Real programs don't just use one of these. They combine them all together!</p>
+        </section>
+
+        <section class="card">
+            <h2>🧠 How Programmers Solve Problems</h2>
+            <p>When a programmer is asked to build a new feature (like a "Login System" or a "High Score Tracker"), they never start typing code immediately. They follow a 5-step master plan:</p>
+
+            <div class="diagram-container">
+                <svg viewBox="0 0 800 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="50" width="130" height="60" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="75" y="75" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">1. Understand</text>
+                    <text x="75" y="95" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">the problem</text>
+                    <path d="M 140 80 L 160 80" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="170" y="50" width="130" height="60" rx="8" fill="#1e293b" stroke="#00f0ff" stroke-width="2"/>
+                    <text x="235" y="75" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">2. Break Down</text>
+                    <text x="235" y="95" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">into tiny steps</text>
+                    <path d="M 300 80 L 320 80" stroke="#00f0ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="330" y="50" width="130" height="60" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <text x="395" y="75" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">3. Algorithm</text>
+                    <text x="395" y="95" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">write plain English</text>
+                    <path d="M 460 80 L 480 80" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="490" y="50" width="130" height="60" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="555" y="75" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">4. Code</text>
+                    <text x="555" y="95" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">translate to C++</text>
+                    <path d="M 620 80 L 640 80" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="650" y="50" width="130" height="60" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="2"/>
+                    <text x="715" y="75" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">5. Test</text>
+                    <text x="715" y="95" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">run the program</text>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                            <path d="M0,0 L0,8 L8,4 z" fill="#94a3b8" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            <p>Let's use this 5-step method to solve three classic programming problems!</p>
+        </section>
+
+        <section class="card">
+            <h2>🔢 Example 1: Even or Odd Number</h2>
+            <p><strong>Step 1: The Problem:</strong> Ask the user to enter a number, and tell them whether that number is even or odd.</p>
+            
+            <p><strong>Steps 2 & 3: The Algorithm (Plain English):</strong></p>
+            <ol>
+                <li>Create an integer box to hold the number.</li>
+                <li>Ask the user to type a number and save it in the box.</li>
+                <li>If the number divides perfectly by 2 (remainder is 0), then it's Even.</li>
+                <li>Otherwise (else), it's Odd.</li>
+            </ol>
+
+            <p><strong>Step 4: The Code:</strong></p>
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+                    <span>even_odd.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="type">int</span> number;
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Enter a number: "</span>;
+    <span class="fn">cin</span> <span class="op">&gt;&gt;</span> number;
+
+    <span class="cmt">// Using Modulus (%) to find the remainder!</span>
+    <span class="kw">if</span>(number <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>)
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"The number is even."</span>;
+    }
+    <span class="kw">else</span>
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"The number is odd."</span>;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+            <p><strong>Step 5: Test!</strong> If we type <code>4</code>, the math is <code>4 % 2</code>. The remainder is <code>0</code>, so it prints "Even". Perfect!</p>
+        </section>
+
+        <section class="card">
+            <h2>🏆 Example 2: Find the Largest Number</h2>
+            <p><strong>Step 1: The Problem:</strong> Ask the user for three different numbers. Figure out which one is the biggest and print it.</p>
+            
+            <p><strong>Steps 2 & 3: The Algorithm:</strong></p>
+            <ol>
+                <li>Get three numbers from the user.</li>
+                <li>Create a variable called <code>largest</code> and assume the 1st number is the biggest for now.</li>
+                <li>Check the 2nd number. If it's bigger than <code>largest</code>, make it the new largest.</li>
+                <li>Check the 3rd number. If it's bigger than <code>largest</code>, make it the new largest.</li>
+                <li>Print the <code>largest</code> variable.</li>
+            </ol>
+
+            <p><strong>Step 4: The Code:</strong></p>
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+                    <span>largest_num.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code2', this)">Copy Code</button>
+                </div>
+<pre id="code2"><span class="type">int</span> num1, num2, num3;
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Enter three numbers: "</span>;
+<span class="fn">cin</span> <span class="op">&gt;&gt;</span> num1 <span class="op">&gt;&gt;</span> num2 <span class="op">&gt;&gt;</span> num3;
+
+<span class="cmt">// Assume the first one is the biggest to start</span>
+<span class="type">int</span> largest <span class="op">=</span> num1;
+
+<span class="cmt">// Did num2 beat it?</span>
+<span class="kw">if</span>(num2 <span class="op">&gt;</span> largest) {
+    largest <span class="op">=</span> num2;
+}
+
+<span class="cmt">// Did num3 beat it?</span>
+<span class="kw">if</span>(num3 <span class="op">&gt;</span> largest) {
+    largest <span class="op">=</span> num3;
+}
+
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"The largest number is: "</span> <span class="op">&lt;&lt;</span> largest;</pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>➕ Example 3: Sum of an Array</h2>
+            <p><strong>Step 1: The Problem:</strong> You have an array of 5 numbers. Add them all together and print the total sum.</p>
+            
+            <p><strong>Steps 2 & 3: The Algorithm:</strong></p>
+            <ol>
+                <li>Create the array of 5 numbers.</li>
+                <li>Create a <code>sum</code> variable and start it at 0.</li>
+                <li>Write a loop that spins 5 times.</li>
+                <li>Inside the loop, grab the current array number and add it to <code>sum</code>.</li>
+                <li>After the loop is completely finished, print <code>sum</code>.</li>
+            </ol>
+
+            <div class="diagram-container">
+                <svg viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg">
+                    <text x="300" y="20" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Logic Flow: Adding to the Sum</text>
+                    
+                    <rect x="50" y="40" width="80" height="40" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="4"/>
+                    <text x="90" y="65" fill="#3b82f6" font-family="monospace" font-size="16" font-weight="bold" text-anchor="middle">sum = 0</text>
+
+                    <path d="M 140 60 L 180 60" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="190" y="40" width="220" height="40" fill="#0d1117" stroke="#10b981" stroke-width="2" rx="4" stroke-dasharray="4,4"/>
+                    <text x="300" y="65" fill="#10b981" font-family="monospace" font-size="14" text-anchor="middle">LOOP: sum = sum + array[i]</text>
+
+                    <path d="M 420 60 L 460 60" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="470" y="40" width="80" height="40" fill="#1e293b" stroke="#f59e0b" stroke-width="2" rx="4"/>
+                    <text x="510" y="65" fill="#f59e0b" font-family="monospace" font-size="16" font-weight="bold" text-anchor="middle">Total!</text>
+                </svg>
+            </div>
+
+            <p><strong>Step 4: The Code:</strong></p>
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+                    <span>array_sum.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code3', this)">Copy Code</button>
+                </div>
+<pre id="code3"><span class="type">int</span> numbers[<span class="num">5</span>] <span class="op">=</span> {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+<span class="type">int</span> sum <span class="op">=</span> <span class="num">0</span>;
+
+<span class="cmt">// Loop through all 5 items</span>
+<span class="kw">for</span>(<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>)
+{
+    sum <span class="op">=</span> sum <span class="op">+</span> numbers[i];
+}
+
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"The total sum is: "</span> <span class="op">&lt;&lt;</span> sum;</pre>
+            </div>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-green);">
+            <h2 style="color: var(--accent-green); border-bottom-color: rgba(16, 185, 129, 0.2);">🗺️ Real-Life Analogy: Planning a Trip</h2>
+            <p>Solving a programming problem is exactly like planning a trip with your friends.</p>
+            <ul>
+                <li><strong>Understand:</strong> Where are we going? (The goal).</li>
+                <li><strong>Break Down:</strong> We need a car, we need snacks, we need a map.</li>
+                <li><strong>Algorithm:</strong> "First, we buy snacks. Second, we get in the car. Third, we drive."</li>
+                <li><strong>Code:</strong> Actually doing the steps.</li>
+            </ul>
+            <p>If you try to code before you write the algorithm, it's like getting in the car and driving before you even know what city you are going to!</p>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Practice Exercises</h2>
+            <p>Open Visual Studio Code. Don't touch the keyboard until you understand the problem in your head!</p>
+
+            <div class="exercise-box">
+                <h4>Exercise 1: Dynamic Counter</h4>
+                <p>Ask the user to enter a number. Use a <code>for</code> loop to print the numbers from 1 all the way up to the number they entered.</p>
+                <button class="btn-hint" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    Get the input: <code>cin >> limit;</code><br>
+                    Make the loop stop at their number: <code>for(int i = 1; i <= limit; i++)</code>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 2: Average Calculator</h4>
+                <p>Create a program that asks the user for 3 numbers. Add them together, divide by 3 to find the average, and print the result.</p>
+                <button class="btn-hint" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    Use parentheses to add them first before dividing! <br>
+                    <code>int average = (n1 + n2 + n3) / 3;</code>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 3: Array Sum Mastery</h4>
+                <p>Create an array holding the numbers `{5, 10, 15, 20, 25}`. Use a loop to calculate their sum and print it out. (Look at Example 3 above if you get stuck!)</p>
+                <button class="btn-hint" onclick="toggleHint('hint3')">💡 Show Hint</button>
+                <div id="hint3" class="hint-content">
+                    Remember to create your <code>int sum = 0;</code> variable <em>before</em> the loop starts. If you put it inside the loop, it resets to 0 every time!
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: #f59e0b; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.1);">
+            <h2 style="color: #f59e0b; border-bottom-color: rgba(245, 158, 11, 0.2);">🔥 Challenge Exercise: Array Champion</h2>
+            <p>This challenge combines Arrays, Loops, and If Statements!</p>
+            <p>Create an array of 5 random numbers: <code>int numbers[5] = {12, 45, 8, 99, 23};</code></p>
+            <p>Write a loop that searches through the entire array to find the <strong>largest number</strong>, and print it at the end.</p>
+            
+            <button class="btn-hint" style="border-color: #f59e0b; color: #f59e0b;" onclick="toggleHint('hint4')">👀 See Solution Logic</button>
+            <div id="hint4" class="hint-content" style="border-left-color: #f59e0b;">
+<pre style="background:transparent; padding:0; margin:0;"><span class="type">int</span> largest <span class="op">=</span> numbers[<span class="num">0</span>]; <span class="cmt">// Start by assuming index 0 is biggest</span>
+
+<span class="kw">for</span>(<span class="type">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">5</span>; i<span class="op">++</span>) {
+    <span class="kw">if</span>(numbers[i] <span class="op">&gt;</span> largest) {
+        largest <span class="op">=</span> numbers[i]; <span class="cmt">// We found a bigger one!</span>
+    }
+}
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> largest;</pre>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, var(--card-bg) 0%, #172439 100%);">
+            <h2>🏠 Homework Assignment: The Teacher's Assistant App</h2>
+            <p>Create a full, polished program that does the following:</p>
+            <ol>
+                <li>Create an array that can hold 5 test scores.</li>
+                <li>Write a loop that asks the user to type in the 5 scores, saving them into the array one by one using <code>cin</code>.</li>
+                <li>Write a second loop that adds all 5 scores together to find the total sum.</li>
+                <li>Divide the sum by 5 to find the <strong>average score</strong>, and print it to the screen!</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>📝 Session Summary</h2>
+            <ul>
+                <li>Programming is not just about writing code; it's about <strong>Problem Solving</strong>.</li>
+                <li>Always understand the problem and write an <strong>algorithm</strong> before you type any C++.</li>
+                <li>An algorithm is just a list of plain-English steps explaining how to solve the problem.</li>
+                <li>Real programs combine multiple concepts. We can put an <code>if</code> statement inside a <code>for</code> loop, and use that loop to read an <code>array</code>!</li>
+                <li>Taking the time to plan your logic saves you hours of fixing broken code later.</li>
+            </ul>
+        </section>
+
+        <div class="nav-container">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session8.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session10.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Copy Code Function
+        function copyCode(elementId, btn) {
+            const codeEl = document.getElementById(elementId);
+            const textToCopy = codeEl.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied! ✓";
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                btn.innerText = "Error!";
+            });
+        }
+
+        // Toggle Hint Function
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

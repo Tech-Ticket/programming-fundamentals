@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 4: Operators and Basic Calculations in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === BASE THEME & VARIABLES === */
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151b2b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent-cyan: #22d3ee;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --code-bg: #0d1117;
+            --border-color: #334155;
+        }
+
+        /* === GLOBAL STYLES === */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 0;
+            font-weight: 700;
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        
+        h2 {
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p { margin-bottom: 1.2rem; }
+        
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        li { margin-bottom: 0.5rem; }
+
+        /* === LAYOUT & HEADER === */
+        header {
+            background: linear-gradient(180deg, #0f172a 0%, var(--bg-color) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle coding-themed background */
+        header::before {
+            content: '+ - * / % == != > < >= <=';
+            position: absolute;
+            font-size: 80px;
+            color: rgba(34, 211, 238, 0.03);
+            font-family: monospace;
+            font-weight: bold;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent-cyan);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* === LEARNING CARDS === */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #475569;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        /* === VISUAL DIAGRAMS === */
+        .diagram-container {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 30px 20px;
+            margin: 20px 0;
+            border: 1px dashed var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-x: auto;
+        }
+
+        svg { max-width: 100%; height: auto; min-height: 300px;}
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .operator-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .operator-card h3 {
+            color: var(--accent-cyan);
+            font-size: 2rem;
+            margin-bottom: 5px;
+            font-family: monospace;
+        }
+
+        .operator-card p {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-weight: bold;
+            margin: 0 0 5px 0;
+        }
+
+        .operator-card span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* === CODE EDITOR STYLE === */
+        .code-window {
+            background: var(--code-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-family: monospace;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .code-dots { display: flex; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #eab308; }
+        .dot.green { background: #22c55e; }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: #ff7b72; font-weight: bold; } /* keyword */
+        .fn { color: #d2a8ff; } /* function */
+        .str { color: #a5d6ff; } /* string */
+        .num { color: #79c0ff; } /* number */
+        .op { color: var(--accent-cyan); font-weight: bold; } /* operator */
+        .cmt { color: #8b949e; font-style: italic; } /* comment */
+        .type { color: #ff7b72; font-weight: bold; } /* variable type */
+        .var { color: #c9d1d9; } /* variable name */
+
+        /* === BUTTONS & INTERACTIVITY === */
+        button { font-family: inherit; cursor: pointer; }
+
+        .btn-copy {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: var(--accent-cyan);
+            color: #000;
+        }
+
+        .btn-copy.copied {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .exercise-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-box h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        .btn-hint {
+            background: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-hint:hover { background: #334155; }
+
+        .hint-content {
+            display: none;
+            background: rgba(34, 211, 238, 0.1);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === FOOTER & NAVIGATION === */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-nav:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+
+        .btn-nav-prev {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+        }
+        .btn-nav-prev:hover { background: #334155; }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            background: #0b0f19;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.4rem; }
+            pre { font-size: 0.9rem; }
+            .nav-container { flex-direction: column; gap: 15px; }
+            .btn-nav { text-align: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\'><text x=\'0\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2322d3ee\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 4</h1>
+            <p style="color: var(--accent-cyan); font-size: 1.2rem; margin-top: 0;">Operators and Basic Calculations in C++</p>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to Session 4! You've learned how to create memory boxes (variables) and how to ask the user to put data into them (using <code>cin</code>). Now it's time to actually <em>do</em> something with that data!</p>
+            <p>In this session, we will turn our program into a calculating machine. You will learn:</p>
+            <ul>
+                <li>What <strong>operators</strong> are and why we need them.</li>
+                <li>How to do math (addition, subtraction, multiplication) in C++.</li>
+                <li>How to compare two pieces of data (like checking if a player's score is high enough to win).</li>
+                <li>How to build your very own interactive calculator program!</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left: 4px solid var(--accent-yellow);">
+            <h2 style="color: var(--accent-yellow); border-bottom-color: var(--accent-yellow);">⏪ Quick Recap</h2>
+            <p>Let's remember the journey so far:</p>
+            <ul>
+                <li><strong>Variables</strong> (like <code>int score;</code>) hold data.</li>
+                <li><strong>Data Types</strong> tell the computer what kind of data it is (numbers, text, etc.).</li>
+                <li><strong>cin >></strong> takes input from the keyboard and saves it in a variable.</li>
+            </ul>
+            <p>We can store a user's age or a game's score, but what if the player finds a health potion? We need a way to add points to their health! This brings us to <strong>Operators</strong>.</p>
+        </section>
+
+        <section class="card">
+            <h2>⚙️ What Are Operators?</h2>
+            <p>In programming, an <strong>operator</strong> is simply a special symbol that tells the computer to perform a specific mathematical or logical action.</p>
+            <p>You already use them every day without thinking about it! When you use a calculator, you press the <code>+</code> button. When you buy two items at a store, the cash register uses the <code>+</code> operator to find your total price.</p>
+            <p>If you write <code>5 + 3</code>, the numbers 5 and 3 are your data, and the <code>+</code> is the operator doing the hard work to give you 8.</p>
+        </section>
+
+        <section class="card">
+            <h2>➕ Arithmetic Operators</h2>
+            <p>C++ has five main symbols used for doing math. Most of them look exactly like the math you learn in school:</p>
+            
+            <div class="operator-grid">
+                <div class="operator-card" style="border-color: var(--accent-blue);">
+                    <h3 style="color: var(--accent-blue);">+</h3>
+                    <p>Addition</p>
+                    <span>Adds two values together.</span><br>
+                    <code style="color: var(--accent-cyan); font-size: 0.9rem;">10 + 5 = 15</code>
+                </div>
+                <div class="operator-card" style="border-color: var(--accent-red);">
+                    <h3 style="color: var(--accent-red);">-</h3>
+                    <p>Subtraction</p>
+                    <span>Subtracts the second value.</span><br>
+                    <code style="color: var(--accent-cyan); font-size: 0.9rem;">10 - 5 = 5</code>
+                </div>
+                <div class="operator-card" style="border-color: var(--accent-green);">
+                    <h3 style="color: var(--accent-green);">*</h3>
+                    <p>Multiplication</p>
+                    <span>Notice we use an asterisk (*) not an x!</span><br>
+                    <code style="color: var(--accent-cyan); font-size: 0.9rem;">10 * 5 = 50</code>
+                </div>
+                <div class="operator-card" style="border-color: var(--accent-purple);">
+                    <h3 style="color: var(--accent-purple);">/</h3>
+                    <p>Division</p>
+                    <span>Divides the first value by the second.</span><br>
+                    <code style="color: var(--accent-cyan); font-size: 0.9rem;">10 / 5 = 2</code>
+                </div>
+                <div class="operator-card" style="border-color: var(--accent-yellow);">
+                    <h3 style="color: var(--accent-yellow);">%</h3>
+                    <p>Modulus (Remainder)</p>
+                    <span>Gives the remainder of a division.</span><br>
+                    <code style="color: var(--accent-cyan); font-size: 0.9rem;">10 % 3 = 1</code>
+                </div>
+            </div>
+
+            <div style="background: rgba(245, 158, 11, 0.1); padding: 15px; border-left: 3px solid var(--accent-yellow); margin-top: 20px; border-radius: 0 8px 8px 0;">
+                <h4 style="color: var(--accent-yellow); margin-top: 0; margin-bottom: 5px;">🍕 Understanding Modulus (%)</h4>
+                <p style="margin: 0; font-size: 0.95rem;">Modulus sounds scary, but it's easy! Imagine you have 10 slices of pizza and 3 friends. If you divide them equally (10 / 3), everyone gets 3 slices. But there is <strong>1 slice left over</strong> in the box. The modulus operator <code>%</code> simply tells you how many slices are left over! So, <code>10 % 3 = 1</code>.</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>👀 Visualizing the Math Machine</h2>
+            <p>Think of an operator as a factory machine. You feed it two ingredients (numbers), it processes them, and spits out a brand new product (the result).</p>
+            
+            <div class="diagram-container">
+                <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="50" y="70" width="100" height="60" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="100" y="90" fill="#94a3b8" font-family="monospace" font-size="12" text-anchor="middle">Number A</text>
+                    <text x="100" y="115" fill="#3b82f6" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">10</text>
+
+                    <path d="M 160 100 L 220 100" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <rect x="230" y="50" width="100" height="100" rx="50" fill="#22d3ee" fill-opacity="0.1" stroke="#22d3ee" stroke-width="3" stroke-dasharray="5,5"/>
+                    <text x="280" y="95" fill="#22d3ee" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">OPERATOR</text>
+                    <text x="280" y="125" fill="#fff" font-family="sans-serif" font-size="36" font-weight="bold" text-anchor="middle">+</text>
+
+                    <path d="M 340 100 L 400 100" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <rect x="230" y="180" width="100" height="60" rx="8" fill="#1e293b" stroke="#ec4899" stroke-width="2"/>
+                    <text x="280" y="200" fill="#94a3b8" font-family="monospace" font-size="12" text-anchor="middle">Number B</text>
+                    <text x="280" y="225" fill="#ec4899" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">5</text>
+                    
+                    <path d="M 280 170 L 280 155" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <rect x="410" y="60" width="120" height="80" rx="8" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="3"/>
+                    <text x="470" y="90" fill="#10b981" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">Result</text>
+                    <text x="470" y="125" fill="#fff" font-family="sans-serif" font-size="32" font-weight="bold" text-anchor="middle">15</text>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💻 Simple Calculation Code</h2>
+            <p>Let's write a program that creates two variables, adds them together, and saves the answer in a third variable!</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>main.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><code><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// 1. Create variables with our starting data</span>
+    <span class="type">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">10</span>;
+    <span class="type">int</span> <span class="var">b</span> <span class="op">=</span> <span class="num">5</span>;
+
+    <span class="cmt">// 2. Use the + operator and store the result in a new variable called 'sum'</span>
+    <span class="type">int</span> <span class="var">sum</span> <span class="op">=</span> <span class="var">a</span> <span class="op">+</span> <span class="var">b</span>;
+
+    <span class="cmt">// 3. Print the result!</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Result: "</span> <span class="op">&lt;&lt;</span> <span class="var">sum</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🧮 Building an Interactive Calculator</h2>
+            <p>Hardcoding numbers like 10 and 5 is okay, but real programs ask the user for numbers! Let's combine what we learned about <code>cin</code> in Session 3 with our new <code>+</code> operator to build a working calculator.</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span>calculator.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code2', this)">Copy Code</button>
+                </div>
+<pre id="code2"><code><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// Create empty boxes for the user's numbers</span>
+    <span class="type">int</span> <span class="var">num1</span>;
+    <span class="type">int</span> <span class="var">num2</span>;
+
+    <span class="cmt">// Ask for the first number</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Enter first number: "</span>;
+    cin <span class="op">&gt;&gt;</span> <span class="var">num1</span>;
+
+    <span class="cmt">// Ask for the second number</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Enter second number: "</span>;
+    cin <span class="op">&gt;&gt;</span> <span class="var">num2</span>;
+
+    <span class="cmt">// Do the math!</span>
+    <span class="type">int</span> <span class="var">result</span> <span class="op">=</span> <span class="var">num1</span> <span class="op">+</span> <span class="var">num2</span>;
+
+    <span class="cmt">// Show the user the answer</span>
+    cout <span class="op">&lt;&lt;</span> <span class="str">"Sum = "</span> <span class="op">&lt;&lt;</span> <span class="var">result</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>⚖️ Comparison Operators</h2>
+            <p>Math isn't the only thing operators do. Sometimes, a program needs to <strong>compare</strong> two things. For example, verifying a password, or checking if a player has beaten the high score.</p>
+            <p>Comparison operators look at two pieces of data and produce a <code>bool</code> result: <strong>true</strong> or <strong>false</strong>.</p>
+            
+            <ul>
+                <li><code style="color: var(--accent-cyan); font-size: 1.2rem;">&gt;</code> <strong>Greater than</strong> (Is 10 &gt; 5? True!)</li>
+                <li><code style="color: var(--accent-cyan); font-size: 1.2rem;">&lt;</code> <strong>Less than</strong> (Is 10 &lt; 5? False!)</li>
+                <li><code style="color: var(--accent-cyan); font-size: 1.2rem;">==</code> <strong>Equal to</strong> (Notice it's TWO equal signs! One <code>=</code> is for putting data in a box, two <code>==</code> is for comparing them).</li>
+                <li><code style="color: var(--accent-cyan); font-size: 1.2rem;">!=</code> <strong>Not equal to</strong> (The exclamation mark means "NOT").</li>
+                <li><code style="color: var(--accent-cyan); font-size: 1.2rem;">&gt;=</code> <strong>Greater than or equal to</strong>.</li>
+                <li><code style="color: var(--accent-cyan); font-size: 1.2rem;">&lt;=</code> <strong>Less than or equal to</strong>.</li>
+            </ul>
+
+            <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent-green); padding: 15px; margin-top: 30px; border-radius: 0 8px 8px 0;">
+                <h4 style="color: var(--accent-green); margin-bottom: 5px;">🎮 Real-Life Analogy: Game Logic</h4>
+                <p style="margin: 0; font-size: 0.95rem;">Video games use comparison operators constantly. Imagine fighting a boss.<br><br>
+                The game constantly checks: <code>bossHealth &lt;= 0</code>.<br>
+                As long as that is <strong>false</strong>, the fight continues.<br>
+                The moment it becomes <strong>true</strong>, the game plays the victory music and gives you loot!</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Practice Exercises</h2>
+            <p>Time to flex your coding muscles! Open Visual Studio Code and build these small apps.</p>
+
+            <div class="exercise-box">
+                <h4>Exercise 1: The Adder</h4>
+                <p>Create a program that asks the user to type two numbers. Add them together and print the result. (Hint: Use the Interactive Calculator code above to help you start!).</p>
+                <button class="btn-hint" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    Make sure you create three <code>int</code> variables: one for the first number, one for the second, and one to hold the <code>sum</code>.
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 2: The Multiplier</h4>
+                <p>Change your program from Exercise 1. Instead of adding the numbers, make the program <strong>multiply</strong> them together to find the product.</p>
+                <button class="btn-hint" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    Just change the <code>+</code> operator to the <code>*</code> operator! <br>
+                    <code style="color: var(--accent-cyan);">int result = num1 * num2;</code>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 3: Two for One</h4>
+                <p>Ask the user for two numbers. Print out their <strong>Sum</strong> (added together) AND their <strong>Difference</strong> (subtracted).</p>
+                <button class="btn-hint" onclick="toggleHint('hint3')">💡 Show Hint</button>
+                <div id="hint3" class="hint-content">
+                    You can do multiple math operations in one program!<br>
+                    <code>int sum = num1 + num2;</code><br>
+                    <code>int diff = num1 - num2;</code><br>
+                    Then use two <code>cout</code> lines to print them both.
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: var(--accent-yellow); box-shadow: 0 10px 25px rgba(245, 158, 11, 0.1);">
+            <h2 style="color: var(--accent-yellow); border-bottom-color: var(--accent-yellow);">🔥 Challenge Exercise: Calculate the Average</h2>
+            <p>Write a program that calculates the <strong>average</strong> of two numbers entered by the user.</p>
+            <p><em>Math Reminder:</em> To find the average of two numbers, you add them together first, and then divide the total by 2.</p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 15px; font-family: monospace;">
+                <strong>Example:</strong><br>
+                Enter first number: 10<br>
+                Enter second number: 20<br>
+                Average = 15
+            </div>
+
+            <button class="btn-hint" style="border-color: var(--accent-yellow); color: var(--accent-yellow);" onclick="toggleHint('hint-challenge')">👀 See a Pro Tip</button>
+            <div id="hint-challenge" class="hint-content" style="border-color: var(--accent-yellow); background: rgba(245, 158, 11, 0.05);">
+                In C++, just like in regular math, you can use parentheses <code>( )</code> to force the computer to do the addition before the division!<br><br>
+                <code style="color: var(--accent-cyan);">int average = (num1 + num2) / 2;</code>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, var(--card-bg), #0f172a);">
+            <h2>🏠 Homework Assignment: The Shopping Cart</h2>
+            <p>Write a program for a small digital store. Your program needs to:</p>
+            <ol>
+                <li>Ask the user for the price of Item 1.</li>
+                <li>Ask the user for the price of Item 2.</li>
+                <li>Calculate the total price.</li>
+                <li>Print out a receipt like: "Your total price is: $[Total]"</li>
+            </ol>
+            <p><em>Bonus point:</em> If you want prices like $4.99, what variable type should you use instead of <code>int</code>? (Remember Session 3!).</p>
+        </section>
+
+        <section class="card">
+            <h2>✅ Session Summary</h2>
+            <ul>
+                <li><strong>Operators</strong> are symbols that perform actions on variables and values.</li>
+                <li><strong>Arithmetic operators</strong> (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>) do mathematical calculations.</li>
+                <li>You can combine <code>cin</code> and operators to build interactive calculators.</li>
+                <li><strong>Comparison operators</strong> (<code>></code>, <code><</code>, <code>==</code>, <code>!=</code>, etc.) compare two values and result in true or false.</li>
+                <li>A single <code>=</code> is for assigning a value. Double <code>==</code> is for checking if two things are identical!</li>
+            </ul>
+        </section>
+
+        <div class="nav-container">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session3.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session5.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Function to copy code to clipboard
+        function copyCode(elementId, button) {
+            const codeText = document.getElementById(elementId).innerText;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = button.innerText;
+                button.innerText = "Copied! ✔";
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy code: ', err);
+                button.innerText = "Error!";
+            });
+        }
+
+        // Function to toggle hint visibility with smooth reveal
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

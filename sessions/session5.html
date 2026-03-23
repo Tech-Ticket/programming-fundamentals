@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 5: Decision Making with if and else in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === BASE THEME & VARIABLES === */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #0b1120;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #22d3ee;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --border-color: #334155;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* === GLOBAL STYLES === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+        }
+
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: var(--accent-cyan);
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* === HEADER === */
+        header {
+            background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+            padding: 50px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bg-code {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: monospace;
+            font-size: 8rem;
+            color: rgba(34, 211, 238, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            font-weight: bold;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container {
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-height: 80px;
+            border-radius: 8px;
+        }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
+
+        .session-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* === LEARNING CARDS (SECTIONS) === */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border-color: #475569;
+        }
+
+        /* Left highlight bar */
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+        }
+
+        /* === VISUAL DIAGRAMS (SVG) === */
+        .diagram-box {
+            background-color: var(--bg-code);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .diagram-box svg {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        /* === CODE BLOCKS === */
+        .code-container {
+            background-color: var(--bg-code);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .code-header {
+            background-color: #1a2235;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mac-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .code-filename {
+            color: var(--text-muted);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        /* Basic Syntax Highlighting */
+        .kw { color: #c678dd; } /* keyword */
+        .type { color: #e5c07b; } /* types */
+        .str { color: #98c379; } /* strings */
+        .num { color: #d19a66; } /* numbers */
+        .fn { color: #61afef; } /* functions */
+        .op { color: #56b6c2; } /* operators */
+        .cmt { color: #7f848e; font-style: italic; } /* comments */
+
+        /* === INTERACTIVE ELEMENTS === */
+        .exercise-card {
+            background-color: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-card h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .hint-btn {
+            background-color: transparent;
+            color: var(--accent-cyan);
+            border: 1px dashed var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-btn:hover {
+            background-color: rgba(34, 211, 238, 0.1);
+        }
+
+        .hint-content {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(34, 211, 238, 0.05);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === NAVIGATION === */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover { background: #2563eb; transform: scale(1.05); }
+
+        .btn-nav-prev {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-nav-prev:hover { background: #334155; }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background-color: #0b1120;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .card {
+                padding: 25px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .nav-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .btn-nav {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-bg-code">if (learning == true) { success(); }</div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Academy Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'60\'><text x=\'10\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2322d3ee\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 5</h1>
+            <div class="session-subtitle">Decision Making with <strong>if</strong> and <strong>else</strong></div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome back! So far, our programs have been a little simple—they run straight from the top line to the bottom line without ever stopping to think. But what if we want our program to be smart and make choices?</p>
+            <p>In this session, you will learn:</p>
+            <ul>
+                <li>How programs check conditions and make decisions.</li>
+                <li>How to use the <strong><code>if</code></strong> statement to run code only when a rule is met.</li>
+                <li>How to use <strong><code>else</code></strong> to give the program a backup plan.</li>
+                <li>How to build fun, interactive programs like a password checker or a grade calculator!</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>🔄 Quick Recap: Session 4</h2>
+            <p>In our last session, we learned about <strong>comparison operators</strong> like <code>&gt;</code>, <code>&lt;</code>, and <code>==</code>.</p>
+            <p>Remember that when you compare two things, the computer gives you an answer of either <strong>true</strong> or <strong>false</strong>.</p>
+            <div class="code-container" style="margin-top: 10px;">
+                <pre style="padding: 15px;"><span class="num">10</span> <span class="op">&gt;</span> <span class="num">5</span>   <span class="cmt">// This is TRUE!</span>
+<span class="num">10</span> <span class="op">==</span> <span class="num">20</span>  <span class="cmt">// This is FALSE!</span></pre>
+            </div>
+            <p>Today, we will use these "true or false" answers to tell our program <em>what to do next</em>.</p>
+        </section>
+
+        <section class="card">
+            <h2>🤔 Why Do Programs Need to Make Decisions?</h2>
+            <p>Think about the apps and games you use every day. They constantly make decisions based on what you do!</p>
+            <ul>
+                <li>🎮 <strong>In a Video Game:</strong> If your health reaches 0, it shows the "Game Over" screen.</li>
+                <li>🏫 <strong>In School software:</strong> If your score is above 50, it says "Pass", otherwise it says "Fail".</li>
+                <li>📱 <strong>Logging into Instagram:</strong> If your password is correct, it lets you in. If it is wrong, it stops you.</li>
+            </ul>
+            <p>Without the ability to make decisions, programming would be useless. Programs <strong>must</strong> check conditions before acting.</p>
+        </section>
+
+        <section class="card">
+            <h2>🚦 Introduction to <code>if</code> Statements</h2>
+            <p>The <strong><code>if</code></strong> statement is how we tell C++ to check a rule. It translates perfectly to English: <em>"If this condition is true, then do this action."</em></p>
+            
+            <p>Here is what the syntax (the grammar of the code) looks like:</p>
+            <div class="code-container">
+<pre><span class="kw">if</span> (condition)
+{
+    <span class="cmt">// Action goes here!</span>
+    <span class="cmt">// This code ONLY runs if the condition is TRUE.</span>
+}</pre>
+            </div>
+
+            <h3>A Simple Example</h3>
+            <p>Let's write a program that asks for your age. If you are 18 or older, it will welcome you as an adult.</p>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="mac-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <span class="code-filename">check_age.cpp</span>
+                    <button class="copy-btn" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="type">int</span> age;
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Enter your age: "</span>;
+    <span class="fn">cin</span> <span class="op">&gt;&gt;</span> age;
+
+    <span class="cmt">// The Decision Making Part!</span>
+    <span class="kw">if</span> (age <span class="op">&gt;=</span> <span class="num">18</span>)
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"You are an adult!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+            <p><strong>Step-by-Step Breakdown:</strong></p>
+            <ol>
+                <li>We create an <code>int</code> variable called <code>age</code>.</li>
+                <li>We use <code>cin</code> to get a number from the user.</li>
+                <li>The <code>if (age >= 18)</code> checks: Is the number they typed greater than or equal to 18?</li>
+                <li>If they typed 20, the condition is <strong>true</strong>, and the program prints "You are an adult!".</li>
+                <li>If they typed 14, the condition is <strong>false</strong>, the program skips the curly braces <code>{}</code>, and prints nothing!</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>🛤️ Using <code>if</code> and <code>else</code></h2>
+            <p>In our previous example, if the user was 14, the program just ended silently. That's not very helpful!</p>
+            <p>Sometimes, we need a "Plan B". That is exactly what <strong><code>else</code></strong> does. It tells the computer: <em>"If the first condition is false, do this backup action instead."</em></p>
+
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="mac-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <span class="code-filename">school_grades.cpp</span>
+                    <button class="copy-btn" onclick="copyCode('code2', this)">Copy Code</button>
+                </div>
+<pre id="code2"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="type">int</span> score;
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Enter your score out of 100: "</span>;
+    <span class="fn">cin</span> <span class="op">&gt;&gt;</span> score;
+
+    <span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="num">50</span>)
+    {
+        <span class="cmt">// This runs if score is 50 or higher</span>
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Congratulations! You passed!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">else</span>
+    {
+        <span class="cmt">// This runs if score is LESS than 50</span>
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Oh no! You failed!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>👁️ Visualizing the Flow</h2>
+            <p>Here is what the computer's "brain" looks like when it runs an <code>if / else</code> statement. It acts like a fork in the road.</p>
+            
+            <div class="diagram-box">
+                <svg width="600" height="350" viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="300,20 400,100 300,180 200,100" fill="#1e293b" stroke="#22d3ee" stroke-width="3"/>
+                    <text x="300" y="105" fill="#f8fafc" font-family="sans-serif" font-size="18" font-weight="bold" text-anchor="middle">Is score &gt;= 50?</text>
+
+                    <path d="M 200 100 L 100 100 L 100 200" fill="none" stroke="#22c55e" stroke-width="4" marker-end="url(#arrow-green)"/>
+                    <text x="140" y="90" fill="#22c55e" font-family="sans-serif" font-size="16" font-weight="bold">TRUE</text>
+
+                    <path d="M 400 100 L 500 100 L 500 200" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-red)"/>
+                    <text x="420" y="90" fill="#ef4444" font-family="sans-serif" font-size="16" font-weight="bold">FALSE</text>
+
+                    <rect x="30" y="200" width="140" height="70" rx="10" fill="#0b1120" stroke="#22c55e" stroke-width="3"/>
+                    <text x="100" y="235" fill="#22c55e" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">Print:</text>
+                    <text x="100" y="255" fill="#f8fafc" font-family="sans-serif" font-size="14" text-anchor="middle">"You passed!"</text>
+
+                    <rect x="430" y="200" width="140" height="70" rx="10" fill="#0b1120" stroke="#ef4444" stroke-width="3"/>
+                    <text x="500" y="235" fill="#ef4444" font-family="sans-serif" font-size="16" font-weight="bold" text-anchor="middle">Print:</text>
+                    <text x="500" y="255" fill="#f8fafc" font-family="sans-serif" font-size="14" text-anchor="middle">"You failed!"</text>
+
+                    <path d="M 100 270 L 100 320 L 300 320" fill="none" stroke="#94a3b8" stroke-width="2" />
+                    <path d="M 500 270 L 500 320 L 300 320" fill="none" stroke="#94a3b8" stroke-width="2" />
+                    <circle cx="300" cy="320" r="6" fill="#94a3b8"/>
+                    <text x="300" y="340" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">Program continues...</text>
+
+                    <defs>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#22c55e" />
+                        </marker>
+                        <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>🕹️ Real-Life Analogy: The Arcade</h2>
+            <p>Imagine you are at a video game arcade. You walk up to a racing game, and it says "Insert 3 Coins to Play".</p>
+            <p>Here is exactly how the arcade machine's "brain" thinks:</p>
+            <ul>
+                <li><strong>IF</strong> you insert 3 or more coins:
+                    <ul><li style="color: var(--accent-green); list-style: none;">✔️ The machine turns on the steering wheel and lets you play.</li></ul>
+                </li>
+                <li><strong>ELSE</strong> (if you inserted 2 or less):
+                    <ul><li style="color: var(--accent-red); list-style: none;">❌ The screen flashes "Not enough coins!" and does not start.</li></ul>
+                </li>
+            </ul>
+            <p>Your C++ programs use <code>if</code> and <code>else</code> to act exactly like that smart machine!</p>
+        </section>
+
+        <section class="card">
+            <h2>💻 Practice Exercises</h2>
+            <p>Open Visual Studio Code and create a new file for these exercises. Give them a try!</p>
+
+            <div class="exercise-card">
+                <h4>Exercise 1: Number Checker</h4>
+                <p>Ask the user to enter a number. <strong>If</strong> the number is greater than 10, print "Number is greater than 10". (You don't need an <code>else</code> for this one!)</p>
+                <button class="hint-btn" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    <p>Use <code>cin &gt;&gt; number;</code> to get the input. Then use <code>if (number &gt; 10) { ... }</code>.</p>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <h4>Exercise 2: Movie Theater Ticket</h4>
+                <p>Ask the user for their age. <strong>If</strong> the age is 18 or more, print "Adult Ticket". <strong>Else</strong>, print "Minor Ticket".</p>
+                <button class="hint-btn" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    <p>Use the <code>&gt;=</code> operator for "greater than or equal to 18". Remember to use the curly braces <code>{}</code> for both the <code>if</code> block and the <code>else</code> block!</p>
+                </div>
+            </div>
+
+            <div class="exercise-card">
+                <h4>Exercise 3: The Grader</h4>
+                <p>Ask the user for their math score. <strong>If</strong> their score is 50 or higher, print "Pass". <strong>Else</strong>, print "Fail".</p>
+                <button class="hint-btn" onclick="toggleHint('hint3')">💡 Show Answer</button>
+                <div id="hint3" class="hint-content">
+<pre style="padding:10px; background:#0b1120; border-radius:5px;"><span class="kw">if</span> (score <span class="op">&gt;=</span> <span class="num">50</span>) {
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Pass"</span>;
+} <span class="kw">else</span> {
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Fail"</span>;
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-purple);">
+            <h2 style="color: var(--accent-purple); border-bottom-color: var(--accent-purple);">🔥 Challenge Exercise</h2>
+            <p>This one is tricky! Write a program that asks the user for a number, and then tells them if the number is <strong>Even</strong> or <strong>Odd</strong>.</p>
+            <p><strong>Hint:</strong> Use the modulus operator (<code>%</code>). If you divide an EVEN number by 2, what is the remainder? It's always 0! </p>
+            
+            <button class="hint-btn" style="color: var(--accent-purple); border-color: var(--accent-purple);" onclick="toggleHint('hint4')">👀 Peek at the solution logic</button>
+            <div id="hint4" class="hint-content" style="border-left-color: var(--accent-purple);">
+                <p>Use this condition inside your <code>if</code> statement:</p>
+                <p><code>if (number % 2 == 0)</code></p>
+                <p>Remember to use double equals <code>==</code> when checking if things are the same!</p>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, #1e293b, #0f172a);">
+            <h2>🏠 Homework</h2>
+            <p>For your homework before Session 6, build a <strong>Weather Assistant</strong> program.</p>
+            <ol>
+                <li>Ask the user: <em>"What is the temperature outside right now?"</em></li>
+                <li>Save their answer in an <code>int</code> variable.</li>
+                <li><strong>If</strong> the temperature is greater than 30, print: <em>"It's hot today! Stay in the AC."</em></li>
+                <li><strong>Else</strong>, print: <em>"The weather is nice. Go play outside!"</em></li>
+            </ol>
+            <p>Make sure it runs without any errors in Visual Studio Code!</p>
+        </section>
+
+        <section class="card">
+            <h2>📝 Session Summary</h2>
+            <ul>
+                <li><strong>Conditional Statements</strong> give your program the power to make choices.</li>
+                <li>The <strong><code>if</code></strong> statement checks a rule. If the rule is true, it runs the code inside its curly braces <code>{}</code>.</li>
+                <li>The <strong><code>else</code></strong> statement is the backup plan. It runs <em>only</em> if the <code>if</code> condition was false.</li>
+                <li>You use comparison operators (like <code>==</code>, <code>></code>, <code><=</code>) inside the parentheses <code>()</code> to set the rule.</li>
+                <li>Decision making is the foundation of almost all smart software, from video games to artificial intelligence!</li>
+            </ul>
+        </section>
+
+        <div class="nav-buttons">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session4.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session6.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Function to Copy Code to Clipboard
+        function copyCode(codeBlockId, btn) {
+            const codeEl = document.getElementById(codeBlockId);
+            const textToCopy = codeEl.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied! ✓";
+                btn.style.backgroundColor = "var(--accent-green)";
+                btn.style.color = "#fff";
+                btn.style.borderColor = "var(--accent-green)";
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "rgba(34, 211, 238, 0.1)";
+                    btn.style.color = "var(--accent-cyan)";
+                    btn.style.borderColor = "var(--accent-cyan)";
+                }, 2000);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // Function to Toggle Hints
+        function toggleHint(hintId) {
+            const hintBox = document.getElementById(hintId);
+            if (hintBox.style.display === "block") {
+                hintBox.style.display = "none";
+            } else {
+                hintBox.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

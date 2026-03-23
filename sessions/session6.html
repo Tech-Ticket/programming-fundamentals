@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 6: Loops and Repeating Actions in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === CORE THEME VARIABLES === */
+        :root {
+            --bg-base: #090e17;
+            --bg-card: #131c2d;
+            --bg-code: #05080f;
+            --text-main: #e2e8f0;
+            --text-dim: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-cyan-glow: rgba(6, 182, 212, 0.3);
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --accent-orange: #f59e0b;
+            --border-soft: #1e293b;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-code: 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* === GLOBAL RESET & TYPOGRAPHY === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+        
+        h2 {
+            font-size: 1.75rem;
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--border-soft);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h3 { font-size: 1.3rem; margin: 1.5rem 0 1rem 0; color: #fff; }
+        
+        p { margin-bottom: 1.2rem; }
+
+        ul, ol { margin-bottom: 1.5rem; padding-left: 2rem; }
+        li { margin-bottom: 0.5rem; }
+
+        code:not(pre code) {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: var(--font-code);
+            font-size: 0.9em;
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* === HEADER === */
+        header {
+            background: linear-gradient(180deg, #0f172a 0%, var(--bg-base) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bg-decor {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-code);
+            font-size: 8rem;
+            color: rgba(6, 182, 212, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            font-weight: 900;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            max-height: 70px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover { transform: scale(1.05); }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .session-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        /* === LEARNING CARDS === */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-color: #334155;
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        /* === DIAGRAMS === */
+        .diagram-container {
+            background-color: var(--bg-code);
+            border: 1px dashed var(--border-soft);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* === CODE EDITOR STYLES === */
+        .code-window {
+            background-color: var(--bg-code);
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .code-header {
+            background-color: #0f172a;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .mac-dots { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background-color: #ef4444; }
+        .dot.yellow { background-color: #f59e0b; }
+        .dot.green { background-color: #10b981; }
+
+        .code-title {
+            color: var(--text-dim);
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+        }
+
+        .btn-copy {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-base);
+        }
+
+        .btn-copy.success {
+            background: var(--accent-green);
+            color: #fff;
+            border-color: var(--accent-green);
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: var(--font-code);
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: #c678dd; font-weight: 600; } /* Keywords */
+        .fn { color: #61afef; } /* Functions */
+        .str { color: #98c379; } /* Strings */
+        .num { color: #d19a66; } /* Numbers */
+        .type { color: #e5c07b; } /* Types */
+        .op { color: #56b6c2; } /* Operators */
+        .cmt { color: #7f848e; font-style: italic; } /* Comments */
+
+        /* === INTERACTIVE FEATURES & EXERCISES === */
+        .exercise-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-box h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            font-size: 1.15rem;
+        }
+
+        .btn-hint {
+            background-color: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--border-soft);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-hint:hover { background-color: #334155; }
+
+        .hint-content {
+            display: none;
+            background: rgba(6, 182, 212, 0.08);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px 20px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === NAVIGATION === */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover { background: #2563eb; transform: scale(1.05); }
+
+        .btn-nav-prev {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-nav-prev:hover { background: #334155; }
+
+        .btn-nav-prev:hover { background: #334155; }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            background-color: #0b111c;
+            border-top: 1px solid var(--border-soft);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .card { padding: 25px; }
+            h1 { font-size: 2rem; }
+            .nav-buttons { flex-direction: column; gap: 15px; }
+            .btn-nav { text-align: center; width: 100%; }
+            pre { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-bg-decor">for(int i=0; i&lt;∞; i++)</div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'60\'><text x=\'0\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2306b6d4\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 6</h1>
+            <div class="session-subtitle">Loops and Repeating Actions in C++</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to Session 6! So far, our programs have been pretty smart—they can remember things (Variables), do math (Operators), and make choices (If/Else). But what if we need the program to do something over and over again?</p>
+            <p>In this session, we will learn how to unlock the true superpower of computers: <strong>Speed and Repetition</strong>. You will learn:</p>
+            <ul>
+                <li>Why programmers hate repeating themselves (and how to avoid it).</li>
+                <li>What a <strong>loop</strong> is in programming.</li>
+                <li>How to use the powerful <strong><code>for</code> loop</strong> in C++ to run code multiple times automatically.</li>
+                <li>How to use loops to generate sequences of numbers and even build a multiplication table!</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-orange);">
+            <h2 style="color: var(--accent-orange); border-bottom-color: rgba(245, 158, 11, 0.2);">⏪ Quick Recap: Session 5</h2>
+            <p>In our last session, we learned about making decisions using <strong>Conditional Statements</strong>.</p>
+            <ul>
+                <li><strong><code>if</code></strong> allowed our program to check a rule and run code only if it was true.</li>
+                <li><strong><code>else</code></strong> gave our program a "Plan B" if the rule was false.</li>
+            </ul>
+            <p>Now that our programs can make decisions, let's teach them how to do repetitive chores for us!</p>
+        </section>
+
+        <section class="card">
+            <h2>😩 The Problem: Repeating Code</h2>
+            <p>Imagine I asked you to write a program that prints the numbers 1, 2, 3, 4, and 5 to the screen. Based on what we know so far, you would probably write this:</p>
+            
+            <div class="code-window">
+<pre><span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="num">1</span> <span class="op">&lt;&lt;</span> endl;
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="num">2</span> <span class="op">&lt;&lt;</span> endl;
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="num">3</span> <span class="op">&lt;&lt;</span> endl;
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="num">4</span> <span class="op">&lt;&lt;</span> endl;
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="num">5</span> <span class="op">&lt;&lt;</span> endl;</pre>
+            </div>
+            
+            <p>Okay, that works. But what if I asked you to print the numbers from 1 to <strong>1,000,000</strong>? You would be typing <code>cout</code> for the rest of your life! Your fingers would fall off!</p>
+            <p>Programmers are lazy (in a good way!). We don't want to type the same thing twice if we don't have to. We need a way to tell the computer: <em>"Hey, run this line of code 1,000,000 times for me."</em></p>
+        </section>
+
+        <section class="card">
+            <h2>🔁 What is a Loop?</h2>
+            <p>A <strong>loop</strong> is a programming tool that allows you to repeat a block of instructions automatically. Instead of writing the code 10 times, you write it once, put it inside a loop, and tell the loop to spin 10 times.</p>
+            
+            <div class="diagram-container">
+                <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="125" r="30" fill="#1e293b" stroke="#06b6d4" stroke-width="3"/>
+                    <text x="100" y="130" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Start</text>
+                    
+                    <path d="M 130 125 L 180 125" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+                    
+                    <rect x="190" y="95" width="140" height="60" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="3"/>
+                    <text x="260" y="130" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="16" text-anchor="middle">Run Code</text>
+
+                    <path d="M 330 125 L 380 125" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <polygon points="440,70 520,125 440,180 360,125" fill="#1e293b" stroke="#f59e0b" stroke-width="3"/>
+                    <text x="440" y="120" fill="#fff" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Are we</text>
+                    <text x="440" y="140" fill="#fff" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">done?</text>
+
+                    <path d="M 440 70 L 440 30 L 260 30 L 260 85" fill="none" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)" stroke-dasharray="5,5"/>
+                    <text x="350" y="20" fill="#10b981" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">NO (Repeat)</text>
+
+                    <path d="M 520 125 L 570 125" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <circle cx="585" cy="125" r="15" fill="#ef4444"/>
+                    <text x="545" y="110" fill="#ef4444" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">YES</text>
+                    <text x="585" y="130" fill="#fff" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Stop</text>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8" />
+                        </marker>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+                        </marker>
+                        <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#ef4444" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>⚙️ Introduction to the <code>for</code> Loop</h2>
+            <p>In C++, the most common type of loop is the <strong><code>for</code> loop</strong>. It looks a little complicated at first, but it is just a compact way of setting up 3 important rules for your loop.</p>
+            
+            <div class="code-window">
+<pre><span class="kw">for</span> ( <span class="type">initialization</span> ; <span class="type">condition</span> ; <span class="type">update</span> )
+{
+    <span class="cmt">// Code to repeat goes here!</span>
+}</pre>
+            </div>
+
+            <p>Let's break down those three scary words in the parentheses:</p>
+            <ol>
+                <li><strong>Initialization (The Starting Point):</strong> We usually create a variable here (like <code>int i = 1;</code>) to act as our counter. We start counting at 1.</li>
+                <li><strong>Condition (When to Stop):</strong> Just like an <code>if</code> statement! The loop will keep running <em>as long as this is true</em>. (e.g., <code>i <= 10;</code>).</li>
+                <li><strong>Update (How to Count):</strong> After every spin of the loop, what happens to our counter? We usually write <code>i++</code>, which is C++ shorthand for <em>"add 1 to i"</em>.</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>💻 C++ Code Example: Counting to 10</h2>
+            <p>Let's use the <code>for</code> loop to fix our earlier problem and print the numbers 1 to 10 using only three lines of code!</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="mac-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span class="code-title">count_to_ten.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// Start at 1; Keep going while i is less than or equal to 10; Add 1 to i every loop</span>
+    <span class="kw">for</span> (<span class="type">int</span> i <span class="op">=</span> <span class="num">1</span>; i <span class="op">&lt;=</span> <span class="num">10</span>; i<span class="op">++</span>)
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> endl;
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+            
+            <p><strong>Step-by-Step Breakdown:</strong></p>
+            <ul>
+                <li>The computer sees <code>int i = 1</code>. It creates a memory box named <code>i</code> and puts a 1 in it.</li>
+                <li>It checks: Is <code>i <= 10</code>? Yes! So it enters the loop.</li>
+                <li>It runs <code>cout &lt;&lt; i;</code> (Prints "1" to the screen).</li>
+                <li>It reaches the bottom of the loop, goes back to the top, and does the update: <code>i++</code>. Now <code>i</code> is 2.</li>
+                <li>It repeats this until <code>i</code> becomes 11. When it checks <code>11 <= 10</code>, the answer is FALSE. The loop stops!</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>🧠 Visualizing the Counter</h2>
+            <p>Watch how the variable <code>i</code> changes as the loop spins. The code inside the curly braces <code>{}</code> runs exactly the same way, but the data inside <code>i</code> keeps changing!</p>
+            
+            <div class="diagram-container">
+                <svg viewBox="0 0 700 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="40" width="80" height="60" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="60" y="60" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">Spin 1</text>
+                    <text x="60" y="85" fill="#06b6d4" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle">i = 1</text>
+                    <path d="M 105 70 L 125 70" stroke="#475569" stroke-width="2" marker-end="url(#arrow-small)"/>
+
+                    <rect x="135" y="40" width="80" height="60" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="175" y="60" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">Spin 2</text>
+                    <text x="175" y="85" fill="#06b6d4" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle">i = 2</text>
+                    <path d="M 220 70 L 240 70" stroke="#475569" stroke-width="2" marker-end="url(#arrow-small)"/>
+
+                    <rect x="250" y="40" width="80" height="60" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="290" y="60" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">Spin 3</text>
+                    <text x="290" y="85" fill="#06b6d4" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle">i = 3</text>
+                    <path d="M 335 70 L 375 70" stroke="#475569" stroke-width="2" stroke-dasharray="4,4"/>
+
+                    <text x="400" y="80" fill="#94a3b8" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle">...</text>
+                    <path d="M 425 70 L 465 70" stroke="#475569" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-small)"/>
+
+                    <rect x="475" y="40" width="80" height="60" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="515" y="60" fill="#94a3b8" font-family="sans-serif" font-size="12" text-anchor="middle">Spin 10</text>
+                    <text x="515" y="85" fill="#06b6d4" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle">i = 10</text>
+                    <path d="M 560 70 L 580 70" stroke="#475569" stroke-width="2" marker-end="url(#arrow-small)"/>
+
+                    <circle cx="630" cy="70" r="25" fill="#ef4444" opacity="0.2" stroke="#ef4444" stroke-width="2"/>
+                    <text x="630" y="65" fill="#ef4444" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle">i = 11</text>
+                    <text x="630" y="80" fill="#ef4444" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">STOP</text>
+
+                    <defs>
+                        <marker id="arrow-small" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L6,3 z" fill="#475569" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-green);">
+            <h2 style="color: var(--accent-green); border-bottom-color: rgba(16, 185, 129, 0.2);">🏫 Real-Life Analogy: The Chalkboard</h2>
+            <p>Have you ever seen a cartoon where a student gets in trouble and has to write <em>"I will finish my homework"</em> 10 times on the chalkboard?</p>
+            <p>If that student knew how to program, they wouldn't write the sentence 10 times. They would write:</p>
+            <div style="background: #1e293b; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-green); font-family: var(--font-code); color: var(--accent-green); margin-bottom: 15px;">
+                for (chalk = 1; chalk <= 10; chalk++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;write("I will finish my homework");<br>
+                }
+            </div>
+            <p>The robot chalkboard would instantly write the sentence 10 times, counting the <code>chalk</code> variable until it hit 10, and then stop!</p>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Practice Exercises</h2>
+            <p>Open Visual Studio Code and see if you can master the <code>for</code> loop!</p>
+
+            <div class="exercise-box">
+                <h4>Exercise 1: Go Bigger!</h4>
+                <p>Modify our example program to print the numbers from <strong>1 to 20</strong> instead of 1 to 10.</p>
+                <button class="btn-hint" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    Look at the middle part of your <code>for</code> loop (the condition). Change the <code>10</code> to a <code>20</code>!
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 2: The Countdown</h4>
+                <p>Write a program that prints numbers from <strong>10 down to 1</strong> (like a rocket launch). </p>
+                <button class="btn-hint" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    1. Initialization: Start at 10 (<code>int i = 10;</code>)<br>
+                    2. Condition: Keep going while <code>i >= 1;</code><br>
+                    3. Update: Instead of <code>i++</code> (add 1), use <code>i--</code> (subtract 1)!
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 3: Evens Only</h4>
+                <p>Write a program that prints only the <strong>even numbers</strong> from 1 to 20 (2, 4, 6, 8...).</p>
+                <button class="btn-hint" onclick="toggleHint('hint3')">💡 Show Hint</button>
+                <div id="hint3" class="hint-content">
+                    You have two ways to do this!<br>
+                    <strong>Easy way:</strong> Start at 2, and update by 2 using <code>i = i + 2</code> (or <code>i += 2</code>).<br>
+                    <strong>Ninja way:</strong> Put an <code>if (i % 2 == 0)</code> statement INSIDE your for loop!
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: var(--accent-purple); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);">
+            <h2 style="color: var(--accent-purple); border-bottom-color: rgba(139, 92, 246, 0.2);">🔥 Challenge Exercise: Multiplication Table</h2>
+            <p>Create a program that prints a clean multiplication table for the number 5. It should use a loop to count from 1 to 10.</p>
+            <p><strong>Expected Output:</strong></p>
+            <div style="background: #000; padding: 15px; border-radius: 8px; font-family: var(--font-code); font-size: 0.9rem; color: #fff; margin-bottom: 15px;">
+                5 x 1 = 5<br>
+                5 x 2 = 10<br>
+                5 x 3 = 15<br>
+                ...<br>
+                5 x 10 = 50
+            </div>
+            <button class="btn-hint" style="border-color: var(--accent-purple); color: var(--accent-purple);" onclick="toggleHint('hint4')">👀 See a Pro Tip</button>
+            <div id="hint4" class="hint-content" style="border-left-color: var(--accent-purple);">
+                You can combine text, your <code>i</code> counter, and math all in one <code>cout</code> statement!<br><br>
+                <code style="background: rgba(139, 92, 246, 0.2); color: #fff;">cout &lt;&lt; "5 x " &lt;&lt; i &lt;&lt; " = " &lt;&lt; (5 * i) &lt;&lt; endl;</code>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, var(--bg-card) 0%, #172439 100%);">
+            <h2>🏠 Homework Assignment</h2>
+            <p>Write an interactive program that puts the user in control of the loop!</p>
+            <ol>
+                <li>Ask the user to enter a number (e.g., "Enter a target number: ").</li>
+                <li>Save their input using <code>cin</code>.</li>
+                <li>Write a <code>for</code> loop that starts at 1 and stops at the <strong>number the user typed</strong>.</li>
+            </ol>
+            <p>If the user types <code>7</code>, your program should print 1 through 7. If they type <code>100</code>, it should print 1 through 100! Save your code to show at the start of our next session.</p>
+        </section>
+
+        <section class="card">
+            <h2>📝 Session Summary</h2>
+            <ul>
+                <li><strong>Loops</strong> allow your program to repeat blocks of code automatically, saving you from typing the same thing over and over.</li>
+                <li>The <strong><code>for</code> loop</strong> is perfect when you know exactly how many times you want to repeat something.</li>
+                <li>A <code>for</code> loop has three parts in its parentheses: <strong>Initialization</strong> (start), <strong>Condition</strong> (stop rule), and <strong>Update</strong> (how to step).</li>
+                <li><code>i++</code> is a special operator that means "add 1 to the variable i". <code>i--</code> means "subtract 1".</li>
+                <li>The variable created inside the loop (like <code>i</code>) changes every time the loop spins, making it incredibly useful for generating sequences or doing math!</li>
+            </ul>
+        </section>
+
+        <div class="nav-buttons">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session5.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session7.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Copy Code Functionality
+        function copyCode(elementId, btn) {
+            const codeEl = document.getElementById(elementId);
+            const textToCopy = codeEl.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied! ✓";
+                btn.classList.add('success');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                btn.innerText = "Error!";
+            });
+        }
+
+        // Hint Reveal Functionality
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

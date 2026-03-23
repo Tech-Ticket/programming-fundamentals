@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 7: Functions in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* === BASE THEME & VARIABLES === */
+        :root {
+            --bg-base: #0b0f19;
+            --bg-card: #151e2e;
+            --bg-code: #05080f;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --accent-cyan: #00f0ff;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-pink: #ec4899;
+            --border-soft: #1e293b;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-code: 'Fira Code', 'Consolas', monospace;
+        }
+
+        /* === GLOBAL RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4 { color: #ffffff; line-height: 1.3; }
+        
+        h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        
+        h2 {
+            font-size: 1.75rem;
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--border-soft);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        p { margin-bottom: 1.2rem; }
+        ul, ol { margin-bottom: 1.5rem; padding-left: 2rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        code:not(pre code) {
+            background-color: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: var(--font-code);
+            font-size: 0.9em;
+        }
+
+        /* === LAYOUT === */
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* === HEADER === */
+        header {
+            background: linear-gradient(180deg, #0d1424 0%, var(--bg-base) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bg-decor {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-code);
+            font-size: 8rem;
+            color: rgba(0, 240, 255, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            font-weight: 900;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container img {
+            max-height: 75px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .logo-container img:hover { transform: scale(1.05); }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .session-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        /* === LEARNING CARDS === */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            border-color: #334155;
+        }
+        .card:hover::before { opacity: 1; }
+
+        /* === DIAGRAMS === */
+        .diagram-container {
+            background-color: var(--bg-code);
+            border: 1px dashed var(--border-soft);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+        }
+        svg { max-width: 100%; height: auto; }
+
+        /* === CODE EDITOR STYLES === */
+        .code-window {
+            background-color: var(--bg-code);
+            border-radius: 10px;
+            border: 1px solid var(--border-soft);
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .code-header {
+            background-color: #0f172a;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .mac-dots { display: flex; gap: 8px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background-color: #ef4444; }
+        .dot.yellow { background-color: #f59e0b; }
+        .dot.green { background-color: #10b981; }
+
+        .btn-copy {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-copy:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-base);
+        }
+        .btn-copy.success {
+            background: var(--accent-green);
+            color: #fff;
+            border-color: var(--accent-green);
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: var(--font-code);
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: #c678dd; font-weight: 600; } /* Keywords */
+        .fn { color: #61afef; } /* Functions */
+        .str { color: #98c379; } /* Strings */
+        .num { color: #d19a66; } /* Numbers */
+        .type { color: #e5c07b; } /* Types */
+        .op { color: #56b6c2; } /* Operators */
+        .cmt { color: #7f848e; font-style: italic; } /* Comments */
+
+        /* === INTERACTIVE EXERCISES === */
+        .exercise-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-box h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            font-size: 1.15rem;
+        }
+
+        .btn-hint {
+            background-color: #1e293b;
+            color: var(--text-main);
+            border: 1px solid var(--border-soft);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-hint:hover { background-color: #334155; }
+
+        .hint-content {
+            display: none;
+            background: rgba(0, 240, 255, 0.08);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 15px 20px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === NAVIGATION === */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-soft);
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-nav:hover { background: #2563eb; transform: scale(1.05); }
+
+        .btn-nav-prev {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-nav-prev:hover { background: #334155; }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            background-color: #080c14;
+            border-top: 1px solid var(--border-soft);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .card { padding: 25px; }
+            h1 { font-size: 2rem; }
+            .nav-buttons { flex-direction: column; gap: 15px; }
+            .btn-nav { text-align: center; width: 100%; }
+            pre { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-bg-decor">void function() { }</div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'60\'><text x=\'0\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2300f0ff\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 7</h1>
+            <div class="session-subtitle">Functions in C++ and Reusing Code</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to Session 7! In our last class, we learned how to repeat actions quickly using loops. But as you build bigger programs (like a full video game or a calculator app), your code will start getting very long and very messy.</p>
+            <p>Today, we will learn how to organize our code like real software engineers! You will learn:</p>
+            <ul>
+                <li>What a <strong>function</strong> is and why programmers love them.</li>
+                <li>How to build your very own custom commands in C++.</li>
+                <li>How to "call" a function from inside your main program.</li>
+                <li>How to keep your code clean, organized, and easy to read.</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-pink);">
+            <h2 style="color: var(--accent-pink); border-bottom-color: rgba(236, 72, 153, 0.2);">⏪ Quick Recap: Session 6</h2>
+            <p>In Session 6, we unlocked the power of loops:</p>
+            <ul>
+                <li>We used the <strong><code>for</code> loop</strong> to run code multiple times.</li>
+                <li>Loops are great for counting, printing patterns, and saving us from typing the same thing repeatedly.</li>
+            </ul>
+            <p>However, loops only repeat code that is in <em>one specific place</em>. What if we want to run the same code at the beginning of the program, and then again at the very end? That's where Functions come in!</p>
+        </section>
+
+        <section class="card">
+            <h2>😩 The Problem: Messy, Repeating Code</h2>
+            <p>Imagine you are building the TechTicket App. Every time a student clicks a button, you want to show a welcome message.</p>
+            
+            <div class="code-window">
+<pre><span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Welcome to TechTicket!"</span> <span class="op">&lt;&lt;</span> endl;
+<span class="cmt">// ... 100 lines of other code ...</span>
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Welcome to TechTicket!"</span> <span class="op">&lt;&lt;</span> endl;
+<span class="cmt">// ... 200 lines of other code ...</span>
+<span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Welcome to TechTicket!"</span> <span class="op">&lt;&lt;</span> endl;</pre>
+            </div>
+            
+            <p>This is a bad habit! If TechTicket changes its name to "CodeTicket", you have to hunt through hundreds of lines of code to find and change every single <code>cout</code>. There has to be a better way!</p>
+        </section>
+
+        <section class="card">
+            <h2>🤖 What is a Function?</h2>
+            <p>A <strong>Function</strong> is like a mini-machine or a custom tool that you build inside your program. You teach this machine how to do one specific task.</p>
+            <p>Once you build the machine, you give it a name. Then, whenever you need that task done, you don't rewrite the code—you just call the machine by its name, and it does the work for you!</p>
+            <p>Fun fact: You have already been using a function this whole time! <code>int main()</code> is the master function where all C++ programs start.</p>
+        </section>
+
+        <section class="card">
+            <h2>🏗️ How to Build a Function</h2>
+            <p>Let's build a mini-machine that prints our welcome message. We build it <em>outside</em> (above) the <code>main()</code> function.</p>
+            
+            <div class="code-window">
+<pre><span class="type">void</span> <span class="fn">greet</span>()
+{
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Welcome to TechTicket!"</span> <span class="op">&lt;&lt;</span> endl;
+}</pre>
+            </div>
+
+            <p>Let's break down this structure:</p>
+            <ul>
+                <li><code>void</code> → This is the <strong>function type</strong>. "Void" means empty. It tells C++ that this machine just does an action but doesn't hand any data back to us when it's done.</li>
+                <li><code>greet</code> → This is the <strong>function name</strong>. You can name it almost anything! (Like <code>sayHello</code>, <code>printWelcome</code>, etc.)</li>
+                <li><code>()</code> → The parentheses. This is where we will eventually put inputs (we'll learn that later!).</li>
+                <li><code>{ ... }</code> → The <strong>function body</strong>. This is the inside of the machine. The code here is what runs when the machine is turned on.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>📞 Calling a Function</h2>
+            <p>Just building the machine doesn't make it run. It will just sit there, turned off. To turn it on, we have to <strong>Call</strong> it from inside our <code>main()</code> program.</p>
+            
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="mac-dots">
+                        <div class="dot red"></div>
+                        <div class="dot yellow"></div>
+                        <div class="dot green"></div>
+                    </div>
+                    <span style="color:var(--text-dim);font-family:var(--font-code);font-size:0.85rem;">welcome.cpp</span>
+                    <button class="btn-copy" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="cmt">// 1. We build our function here</span>
+<span class="type">void</span> <span class="fn">greet</span>()
+{
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Welcome to TechTicket!"</span> <span class="op">&lt;&lt;</span> endl;
+}
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// 2. We "call" our function inside main()</span>
+    <span class="fn">greet</span>();  <span class="cmt">// Prints the message!</span>
+    <span class="fn">greet</span>();  <span class="cmt">// Prints it again!</span>
+    <span class="fn">greet</span>();  <span class="cmt">// Prints it a third time!</span>
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+            <p>Notice how clean the <code>main()</code> function is now! If we want to change the message to "Welcome to C++!", we only have to change it in ONE place (inside the <code>greet()</code> machine), and it automatically updates everywhere!</p>
+        </section>
+
+        <section class="card">
+            <h2>👀 Visualizing the Function Call</h2>
+            <p>When the computer is running <code>main()</code> and sees <code>greet();</code>, it presses "pause", jumps up to the <code>greet</code> function, runs all the code inside it, and then jumps right back to where it left off!</p>
+            
+            <div class="diagram-container">
+                <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="50" y="40" width="180" height="200" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="3"/>
+                    <text x="140" y="70" fill="#3b82f6" font-family="monospace" font-weight="bold" font-size="16" text-anchor="middle">int main()</text>
+                    
+                    <text x="70" y="110" fill="#fff" font-family="monospace" font-size="14">1. Start</text>
+                    
+                    <rect x="65" y="130" width="100" height="25" fill="#00f0ff" fill-opacity="0.2" rx="4"/>
+                    <text x="70" y="148" fill="#00f0ff" font-family="monospace" font-weight="bold" font-size="14">2. greet();</text>
+                    
+                    <text x="70" y="188" fill="#fff" font-family="monospace" font-size="14">4. Next line</text>
+                    <text x="70" y="218" fill="#fff" font-family="monospace" font-size="14">5. return 0;</text>
+
+                    <rect x="370" y="40" width="200" height="120" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="3"/>
+                    <text x="470" y="70" fill="#10b981" font-family="monospace" font-weight="bold" font-size="16" text-anchor="middle">void greet()</text>
+                    <text x="390" y="110" fill="#fff" font-family="monospace" font-size="12">3. cout &lt;&lt; "Welcome!";</text>
+
+                    <path d="M 170 143 L 360 80" stroke="#00f0ff" stroke-width="3" marker-end="url(#arrow-cyan)" fill="none"/>
+                    
+                    <path d="M 390 145 L 140 180" stroke="#10b981" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrow-green)" fill="none"/>
+
+                    <defs>
+                        <marker id="arrow-cyan" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#00f0ff" />
+                        </marker>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#10b981" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-yellow);">
+            <h2 style="color: var(--accent-yellow); border-bottom-color: rgba(245, 158, 11, 0.2);">🍫 Real-Life Analogy: The Vending Machine</h2>
+            <p>Think about a vending machine. Inside the machine, there is a complicated mechanical process: a coil spins, the snack falls, the trapdoor unlocks.</p>
+            <p>As a user, you don't need to know <em>how</em> the machine does all that. You just press the button labeled <strong>[A4]</strong>.</p>
+            <ul>
+                <li>The mechanical process inside is the <strong>Function Body</strong> <code>{ ... }</code>.</li>
+                <li>The button <strong>[A4]</strong> is the <strong>Function Name</strong>.</li>
+                <li>Pressing the button is <strong>Calling the Function</strong>.</li>
+            </ul>
+            <p>Every time you press the button, the machine repeats the exact same sequence for you!</p>
+        </section>
+
+        <section class="card">
+            <h2>🏋️‍♂️ Practice Exercises</h2>
+            <p>Time to build your own mini-machines! Open Visual Studio Code and try these out.</p>
+
+            <div class="exercise-box">
+                <h4>Exercise 1: The Announcer</h4>
+                <p>Create a function called <code>announce()</code> that prints: <em>"Hello TechTicket Students!"</em>. Then, go into your <code>main()</code> function and call it 3 times.</p>
+                <button class="btn-hint" onclick="toggleHint('hint1')">💡 Show Hint</button>
+                <div id="hint1" class="hint-content">
+                    Put <code>void announce() { ... }</code> ABOVE your <code>int main()</code>. Inside <code>main()</code>, type <code>announce();</code> three times!
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 2: The Motivator</h4>
+                <p>Create a new function called <code>motivate()</code> that prints: <em>"Keep learning programming!"</em> Call it once from <code>main()</code>.</p>
+                <button class="btn-hint" onclick="toggleHint('hint2')">💡 Show Hint</button>
+                <div id="hint2" class="hint-content">
+                    <pre style="background:transparent; padding:0; margin:0;"><span class="type">void</span> <span class="fn">motivate</span>() {
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Keep learning programming!"</span> <span class="op">&lt;&lt;</span> endl;
+}</pre>
+                </div>
+            </div>
+
+            <div class="exercise-box">
+                <h4>Exercise 3: The Counter Machine</h4>
+                <p>Functions can have loops inside them! Create a function called <code>countToFive()</code>. Inside its body, write a <code>for</code> loop that prints numbers from 1 to 5. Call it from <code>main()</code>.</p>
+                <button class="btn-hint" onclick="toggleHint('hint3')">💡 Show Hint</button>
+                <div id="hint3" class="hint-content">
+                    Put the <code>for (int i = 1; i <= 5; i++)</code> loop entirely between the curly braces of your new function!
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: var(--accent-purple); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);">
+            <h2 style="color: var(--accent-purple); border-bottom-color: rgba(139, 92, 246, 0.2);">🔥 Challenge Exercise: The Multiplier Tool</h2>
+            <p>Create a function named <code>printTable3()</code>.</p>
+            <p>Inside this function, use a loop to print out the multiplication table for the number 3 (e.g., 3x1=3, 3x2=6, up to 3x10=30).</p>
+            <p>Then, call this function from your <code>main()</code> program. If you do it right, your <code>main()</code> program will only be one line long, but it will print 10 lines of math to the screen!</p>
+            
+            <button class="btn-hint" style="border-color: var(--accent-purple); color: var(--accent-purple);" onclick="toggleHint('hint4')">👀 See Solution Structure</button>
+            <div id="hint4" class="hint-content" style="border-left-color: var(--accent-purple);">
+<pre style="background:#05080f; padding:10px; border-radius:5px;"><span class="type">void</span> <span class="fn">printTable3</span>() {
+    <span class="kw">for</span>(<span class="type">int</span> i <span class="op">=</span> <span class="num">1</span>; i <span class="op">&lt;=</span> <span class="num">10</span>; i<span class="op">++</span>) {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"3 x "</span> <span class="op">&lt;&lt;</span> i <span class="op">&lt;&lt;</span> <span class="str">" = "</span> <span class="op">&lt;&lt;</span> (<span class="num">3</span><span class="op">*</span>i) <span class="op">&lt;&lt;</span> endl;
+    }
+}</pre>
+            </div>
+        </section>
+
+        <section class="card" style="background: linear-gradient(145deg, var(--bg-card) 0%, #0d1a2b 100%);">
+            <h2>🏠 Homework Assignment</h2>
+            <p>Your task is to build a program with <strong>three</strong> separate parts:</p>
+            <ol>
+                <li>Create a function called <code>welcomeUser()</code> that prints a nice greeting.</li>
+                <li>Create a second function called <code>printNumbers()</code> that uses a loop to count from 1 to 10.</li>
+                <li>Inside your <code>int main()</code> function, call <code>welcomeUser()</code> first, and then call <code>printNumbers()</code> right after it.</li>
+            </ol>
+            <p>This will show you how to organize different tasks into their own machines and run them in order! Save your code to show us next session.</p>
+        </section>
+
+        <section class="card">
+            <h2>📝 Session Summary</h2>
+            <ul>
+                <li>A <strong>Function</strong> is a reusable block of code that performs a specific task.</li>
+                <li>Functions keep our code clean, organized, and prevent us from repeating ourselves.</li>
+                <li>Functions are built <em>outside</em> (usually above) the <code>main()</code> program.</li>
+                <li>The keyword <code>void</code> means the function just "does something" but doesn't hand data back.</li>
+                <li>To run a function, you must <strong>call</strong> it by typing its name followed by parentheses and a semicolon inside <code>main()</code> (e.g., <code>greet();</code>).</li>
+            </ul>
+        </section>
+
+        <div class="nav-buttons">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session6.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session8.html'">Next Session ➡</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Copy Code Function
+        function copyCode(elementId, btn) {
+            const codeEl = document.getElementById(elementId);
+            const textToCopy = codeEl.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied! ✓";
+                btn.classList.add('success');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('success');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                btn.innerText = "Error!";
+            });
+        }
+
+        // Toggle Hint Function
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket | Programming Fundamentals with C++</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* === CSS VARIABLES === */
+        :root {
+            --bg-dark: #0b0f19;
+            --bg-card: #151b2b;
+            --bg-card-hover: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #00f0ff;
+            --accent-blue: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #00f0ff 0%, #3b82f6 100%);
+            --border-color: #334155;
+            --shadow-glow: 0 0 20px rgba(0, 240, 255, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        /* === GLOBAL RESET === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4 {
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        h2 span {
+            color: var(--accent-cyan);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* === BUTTONS === */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 2px solid var(--accent-cyan);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* === NAVIGATION === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(11, 15, 25, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-logo img {
+            height: 40px;
+        }
+
+        .nav-logo span {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* === HERO SECTION === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+            position: relative;
+            background: radial-gradient(circle at center, #151b2b 0%, #0b0f19 70%);
+        }
+
+        .hero::before {
+            content: '{ C++ }';
+            position: absolute;
+            font-size: 15vw;
+            color: rgba(255, 255, 255, 0.02);
+            font-family: 'Fira Code', monospace;
+            font-weight: 800;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        /* === SECTION LAYOUTS === */
+        section {
+            padding: 100px 5%;
+        }
+
+        /* === OVERVIEW SECTION (GRID) === */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            text-align: left;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* === LEARNING PATH VISUAL (TIMELINE) === */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: var(--border-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .timeline-item.left { left: 0; text-align: right; }
+        .timeline-item.right { left: 50%; }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: var(--bg-dark);
+            border: 4px solid var(--accent-cyan);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item.right::after { left: -10px; }
+
+        .timeline-content {
+            padding: 20px;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timeline-content h3 { color: var(--accent-cyan); margin-bottom: 5px; }
+        .timeline-content p { color: var(--text-muted); margin-bottom: 0; font-size: 0.9rem; }
+
+        /* === SESSIONS GRID === */
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .session-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .session-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .session-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .session-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .session-header {
+            padding: 25px 25px 15px;
+        }
+
+        .session-number {
+            font-family: 'Fira Code', monospace;
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .session-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .session-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            flex-grow: 1;
+        }
+
+        .session-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .session-footer .btn {
+            width: 100%;
+        }
+
+        /* Expandable content */
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .expand-btn:hover { color: var(--text-main); }
+        .expand-content {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* === ABOUT SECTION === */
+        .about-section {
+            background: linear-gradient(to right, #0b1120, #151b2b);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-content i {
+            font-size: 3rem;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+
+        /* === FOOTER === */
+        footer {
+            background: #05080f;
+            padding: 60px 20px 30px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-logo {
+            margin-bottom: 20px;
+        }
+
+        .footer-logo img {
+            height: 50px;
+            filter: grayscale(100%) opacity(0.7);
+            transition: var(--transition);
+        }
+
+        .footer-logo img:hover {
+            filter: grayscale(0%) opacity(1);
+        }
+
+        .copyright {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* === ANIMATIONS (JS REVEAL) === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media screen and (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: rgba(11, 15, 25, 0.95);
+                padding: 20px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1rem; }
+
+            /* Timeline Responsive */
+            .timeline::after { left: 31px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 25px; }
+            .timeline-item.left { text-align: left; }
+            .timeline-item.right { left: 0; }
+            .timeline-item.left::after, .timeline-item.right::after { left: 21px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo">
+            <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50/151b2b/00f0ff?text=TechTicket'">
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#path">Learning Path</a></li>
+            <li><a href="#sessions">Sessions</a></li>
+            <li><a href="#about">About</a></li>
+        </ul>
+        <div class="mobile-menu-btn" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <header class="hero" id="home">
+        <div class="hero-content reveal active">
+            <h1>Programming Fundamentals with C++</h1>
+            <p>Master the language that powers games, browsers, and operating systems. Learn how computers think and start building your own real programs from scratch.</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="#sessions" class="btn btn-primary">Start Learning <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></a>
+                <a href="#overview" class="btn btn-outline">Course Details</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="overview">
+        <h2 class="reveal">What You Will <span>Learn</span></h2>
+        <p class="section-subtitle reveal">Designed specifically for students aged 11–17, this course breaks down complex coding concepts into fun, bite-sized lessons.</p>
+        
+        <div class="overview-grid">
+            <div class="feature-card reveal">
+                <i class="fas fa-laptop-code"></i>
+                <h3>Programming Basics</h3>
+                <p>Understand how computers read and execute instructions step by step.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i class="fas fa-box-open"></i>
+                <h3>Variables & Data</h3>
+                <p>Learn how programs store information like scores, names, and passwords.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i class="fas fa-code-branch"></i>
+                <h3>Logic & Decisions</h3>
+                <p>Teach your programs to make smart choices using <code>if</code> and <code>else</code> conditions.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i class="fas fa-redo-alt"></i>
+                <h3>Loops & Repetition</h3>
+                <p>Save time by making the computer do the boring, repetitive work for you.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i class="fas fa-cubes"></i>
+                <h3>Functions & Arrays</h3>
+                <p>Organize your code like a pro and manage large lists of data efficiently.</p>
+            </div>
+            <div class="feature-card reveal">
+                <i class="fas fa-rocket"></i>
+                <h3>Real Projects</h3>
+                <p>Apply your skills by building calculators, quizzes, and mini-games.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="path" style="background-color: var(--bg-card);">
+        <h2 class="reveal">Your Learning <span>Journey</span></h2>
+        <p class="section-subtitle reveal">A structured step-by-step path from beginner to builder.</p>
+
+        <div class="timeline">
+            <div class="timeline-item left reveal">
+                <div class="timeline-content">
+                    <h3>Step 1: The Basics</h3>
+                    <p>Sessions 1-4. Learn the syntax, how to store data, and basic math.</p>
+                </div>
+            </div>
+            <div class="timeline-item right reveal">
+                <div class="timeline-content">
+                    <h3>Step 2: Logic Flow</h3>
+                    <p>Sessions 5-6. Control your program using decisions and loops.</p>
+                </div>
+            </div>
+            <div class="timeline-item left reveal">
+                <div class="timeline-content">
+                    <h3>Step 3: Structure</h3>
+                    <p>Sessions 7-8. Organize your code with functions and arrays.</p>
+                </div>
+            </div>
+            <div class="timeline-item right reveal">
+                <div class="timeline-content">
+                    <h3>Step 4: Mastery</h3>
+                    <p>Sessions 9-10. Problem solving and building your final mini-project.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sessions">
+        <h2 class="reveal">Course <span>Sessions</span></h2>
+        <p class="section-subtitle reveal">10 interactive modules to take you from absolute beginner to C++ programmer.</p>
+
+        <div class="sessions-grid">
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 01</span>
+                    <h3 class="session-title">Introduction to Programming</h3>
+                    <p class="session-desc">Write and run your very first C++ program.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Learn what programming is, how computers follow instructions, and use <code>cout</code> to print text to the screen.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session1.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 02</span>
+                    <h3 class="session-title">Variables</h3>
+                    <p class="session-desc">Learn how to store data in computer memory.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Understand variables as labeled boxes, learn basic C++ types, and practice storing and printing information.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session2.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 03</span>
+                    <h3 class="session-title">Data Types and User Input</h3>
+                    <p class="session-desc">Make your programs interactive by asking for input.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Explore integers, decimals, text, and booleans. Use <code>cin</code> to get answers from the user.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session3.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 04</span>
+                    <h3 class="session-title">Operators and Calculations</h3>
+                    <p class="session-desc">Turn your computer into a powerful calculator.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Learn arithmetic and comparison operators to process data and compare values.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session4.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 05</span>
+                    <h3 class="session-title">Decision Making</h3>
+                    <p class="session-desc">Teach your code to think using if/else logic.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Write code that chooses different actions based on conditions, like a password checker or game logic.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session5.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 06</span>
+                    <h3 class="session-title">Loops</h3>
+                    <p class="session-desc">Automate repetitive tasks with the power of loops.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Understand why programmers hate repeating code and learn to use the <code>for</code> loop to execute instructions multiple times automatically.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session6.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 07</span>
+                    <h3 class="session-title">Functions</h3>
+                    <p class="session-desc">Organize and reuse your code efficiently.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Build your own custom commands! Learn how to define functions, pass information, and call them to keep code clean.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session7.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 08</span>
+                    <h3 class="session-title">Arrays</h3>
+                    <p class="session-desc">Manage large lists of data effortlessly.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Learn to store multiple values in a single structure, access elements via indexes, and process lists using loops.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session8.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal">
+                <div class="session-header">
+                    <span class="session-number">Session 09</span>
+                    <h3 class="session-title">Problem Solving</h3>
+                    <p class="session-desc">Think like a true Software Engineer.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Break complex problems down into simple steps, write algorithms, and combine all previous concepts to build solutions.
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session9.html" class="btn btn-outline">Open Session</a>
+                </div>
+            </div>
+
+            <div class="session-card reveal" style="border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0,240,255,0.1);">
+                <div class="session-header">
+                    <span class="session-number" style="color: var(--accent-yellow);">Session 10</span>
+                    <h3 class="session-title">Final Mini Project</h3>
+                    <p class="session-desc">Build a complete working program from scratch.</p>
+                    <button class="expand-btn" onclick="toggleExpand(this)">Show details <i class="fas fa-chevron-down"></i></button>
+                    <div class="expand-content">
+                        Apply everything you've learned. Plan, code, and test an interactive Quiz Game or Calculator app!
+                    </div>
+                </div>
+                <div class="session-footer">
+                    <a href="sessions/session10.html" class="btn btn-primary" style="width: 100%;">Start Final Project</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="about-content reveal">
+            <i class="fas fa-graduation-cap"></i>
+            <h2>About <span>TechTicket</span></h2>
+            <p style="font-size: 1.15rem; color: var(--text-muted); margin-bottom: 30px;">
+                TechTicket helps students aged 11–17 learn programming through interactive lessons, real coding exercises, and practical projects. We believe coding is a superpower that anyone can learn.
+            </p>
+            <a href="sessions/session1.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 15px 35px;">
+                Start Session 1 Now <i class="fas fa-rocket" style="margin-left: 10px;"></i>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-logo">
+            <img src="../logo.png" alt="TechTicket Logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50/151b2b/00f0ff?text=TechTicket'">
+        </div>
+        <p>Programming Fundamentals with C++</p>
+        <div class="copyright">
+            © TechTicket Academy — Educational material for TechTicket students only. Redistribution is not allowed.
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Expandable Card Details
+        function toggleExpand(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                icon.className = "fas fa-chevron-down";
+            } else {
+                content.style.display = "block";
+                icon.className = "fas fa-chevron-up";
+            }
+        }
+
+        // Scroll Animation (Reveal Elements)
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Trigger once on load
+        reveal();
+
+        // Navbar Blur on Scroll
+        window.addEventListener("scroll", function() {
+            var nav = document.getElementById("navbar");
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)";
+                nav.style.background = "rgba(11, 15, 25, 0.95)";
+            } else {
+                nav.style.boxShadow = "none";
+                nav.style.background = "rgba(11, 15, 25, 0.9)";
+            }
+        });
+    </script>
+</body>
+</html>

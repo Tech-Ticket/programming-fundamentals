@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTicket - Session 10: Final Mini Project in C++</title>
+    <link rel="icon" href="../logo.png">
+    <style>
+        /* ==========================================================
+           CSS VARIABLES & THEME SETUP
+           ========================================================== */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #0b1120;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --border-color: #334155;
+            --shadow-glow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+
+        /* ==========================================================
+           GLOBAL STYLES
+           ========================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* ==========================================================
+           TYPOGRAPHY
+           ========================================================== */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 2.5rem; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+        
+        h2 {
+            font-size: 1.75rem;
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 { font-size: 1.3rem; margin: 1.5rem 0 0.5rem 0; color: var(--accent-blue); }
+        
+        p { margin-bottom: 1.2rem; }
+        
+        ul, ol { margin-bottom: 1.5rem; padding-left: 2rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        strong { color: var(--accent-cyan); }
+        
+        code:not(pre code) {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        /* ==========================================================
+           LAYOUT & CONTAINERS
+           ========================================================== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ==========================================================
+           HEADER
+           ========================================================== */
+        header {
+            background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-bg-code {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: monospace;
+            font-size: 8rem;
+            color: rgba(6, 182, 212, 0.03);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            font-weight: 900;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container { margin-bottom: 20px; }
+        .logo-container img { max-height: 80px; transition: transform 0.3s ease; }
+        .logo-container img:hover { transform: scale(1.05); }
+
+        .course-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .session-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* ==========================================================
+           LEARNING CARDS (SECTIONS)
+           ========================================================== */
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            border-color: #475569;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+        }
+
+        /* Special Celebration Card */
+        .card-celebration {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 2px solid var(--accent-yellow);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+            text-align: center;
+        }
+        .card-celebration::before {
+            background: linear-gradient(to bottom, var(--accent-yellow), var(--accent-pink));
+        }
+
+        /* ==========================================================
+           DIAGRAMS & VISUALS
+           ========================================================== */
+        .diagram-box {
+            background-color: var(--bg-code);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+        }
+        
+        .diagram-box svg {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        /* ==========================================================
+           CODE BLOCKS
+           ========================================================== */
+        .code-container {
+            background-color: var(--bg-code);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .code-header {
+            background-color: #1a2235;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mac-dots { display: flex; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .code-filename {
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        /* Syntax Highlighting */
+        .kw { color: #c678dd; font-weight: bold; } /* keyword */
+        .type { color: #e5c07b; } /* types */
+        .str { color: #98c379; } /* strings */
+        .num { color: #d19a66; } /* numbers */
+        .fn { color: #61afef; } /* functions */
+        .op { color: #56b6c2; } /* operators */
+        .cmt { color: #7f848e; font-style: italic; } /* comments */
+
+        /* ==========================================================
+           INTERACTIVE EXERCISES & HINTS
+           ========================================================== */
+        .exercise-card {
+            background-color: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .exercise-card h4 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .hint-btn {
+            background-color: transparent;
+            color: var(--accent-cyan);
+            border: 1px dashed var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-btn:hover { background-color: rgba(6, 182, 212, 0.1); }
+
+        .hint-content {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(6, 182, 212, 0.05);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Course recap grid */
+        .recap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .recap-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .recap-item span {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        /* ==========================================================
+           NAVIGATION & FOOTER
+           ========================================================== */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover { background: #2563eb; transform: scale(1.05); }
+
+        .btn-nav-prev {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-nav-prev:hover { background: #334155; }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background-color: #0b1120;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .footer-message {
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* ==========================================================
+           RESPONSIVE
+           ========================================================== */
+        @media (max-width: 768px) {
+            .card { padding: 25px; }
+            h1 { font-size: 2rem; }
+            .nav-buttons { flex-direction: column; gap: 15px; }
+            .btn-nav { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-bg-code">int main() { return success; }</div>
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="../logo.png" alt="TechTicket Academy Logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'250\' height=\'60\'><text x=\'10\' y=\'45\' font-family=\'sans-serif\' font-size=\'40\' fill=\'%2306b6d4\' font-weight=\'bold\'>TechTicket</text></svg>'">
+            </div>
+            <div class="course-badge">Programming Fundamentals with C++</div>
+            <h1>Session 10</h1>
+            <div class="session-subtitle">Final Mini Project in C++</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="card">
+            <h2>🎯 Session Overview</h2>
+            <p>Welcome to the Grand Finale! You have made it to Session 10. Over the past few weeks, you have gathered an amazing toolbox of programming skills.</p>
+            <p>Today is the day we put all those puzzle pieces together. In this final session, you will learn:</p>
+            <ul>
+                <li>How to combine everything you've learned into one massive, working program.</li>
+                <li>How to use your problem-solving skills to design a program from scratch.</li>
+                <li>How to build a complete <strong>Interactive Quiz Game</strong>.</li>
+                <li>How to test your code and improve it like a real Software Engineer.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>🛠️ Review of Your Developer Toolkit</h2>
+            <p>Before we build our final project, let's look at all the superpowers you have unlocked during this course:</p>
+            
+            <div class="recap-grid">
+                <div class="recap-item">
+                    <span>📦</span>
+                    <strong>Variables</strong><br>
+                    <small>Storing data</small>
+                </div>
+                <div class="recap-item">
+                    <span>🎤</span>
+                    <strong>User Input</strong><br>
+                    <small>Talking with `cin`</small>
+                </div>
+                <div class="recap-item">
+                    <span>➕</span>
+                    <strong>Operators</strong><br>
+                    <small>Doing math & logic</small>
+                </div>
+                <div class="recap-item">
+                    <span>🚦</span>
+                    <strong>If / Else</strong><br>
+                    <small>Making decisions</small>
+                </div>
+                <div class="recap-item">
+                    <span>🔁</span>
+                    <strong>Loops</strong><br>
+                    <small>Repeating actions</small>
+                </div>
+                <div class="recap-item">
+                    <span>🤖</span>
+                    <strong>Functions</strong><br>
+                    <small>Organizing code</small>
+                </div>
+                <div class="recap-item">
+                    <span>🗄️</span>
+                    <strong>Arrays</strong><br>
+                    <small>Storing lists</small>
+                </div>
+                <div class="recap-item">
+                    <span>🧩</span>
+                    <strong>Problem Solving</strong><br>
+                    <small>Writing algorithms</small>
+                </div>
+            </div>
+            <p style="margin-top: 20px;">Real software—like Fortnite, Instagram, or a Tesla's brain—doesn't just use one of these. It combines all of them!</p>
+        </section>
+
+        <section class="card">
+            <h2>🎮 Introduction to the Final Mini Project</h2>
+            <p>Your final mission is to build a <strong>Simple Quiz Game</strong>.</p>
+            <p>The program will:</p>
+            <ol>
+                <li>Ask the player a question.</li>
+                <li>Wait for the player to type an answer.</li>
+                <li>Check if the answer is correct.</li>
+                <li>Calculate their total score and print it at the end.</li>
+            </ol>
+        </section>
+
+        <section class="card">
+            <h2>🗺️ Planning the Program (The Algorithm)</h2>
+            <p>Remember Session 9! We never start coding blindly. Let's write out our plan (Algorithm) first.</p>
+            
+            <div style="background: rgba(15, 23, 42, 0.5); padding: 20px; border-radius: 8px; border-left: 4px solid var(--accent-yellow); margin-bottom: 20px;">
+                <h4 style="color: var(--accent-yellow); margin-bottom: 10px;">Our Blueprint:</h4>
+                <ol style="margin-bottom: 0;">
+                    <li>Start the program.</li>
+                    <li>Create an integer variable called <code>score</code> and set it to 0.</li>
+                    <li>Ask Question 1 to the user.</li>
+                    <li>Get their answer using <code>cin</code>.</li>
+                    <li>If their answer is right, add 1 to <code>score</code>.</li>
+                    <li>Ask Question 2... (repeat the process).</li>
+                    <li>At the very end, print the final <code>score</code> to the screen.</li>
+                </ol>
+            </div>
+
+            <div class="diagram-box">
+                <svg viewBox="0 0 800 250" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="125" r="40" fill="#1e293b" stroke="#06b6d4" stroke-width="3"/>
+                    <text x="60" y="120" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">START</text>
+                    <text x="60" y="140" fill="#06b6d4" font-family="monospace" font-size="12" text-anchor="middle">score = 0</text>
+                    
+                    <path d="M 100 125 L 140 125" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <rect x="150" y="95" width="120" height="60" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="3"/>
+                    <text x="210" y="125" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Ask</text>
+                    <text x="210" y="145" fill="#fff" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">Question</text>
+
+                    <path d="M 270 125 L 310 125" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <polygon points="380,75 450,125 380,175 310,125" fill="#1e293b" stroke="#f59e0b" stroke-width="3"/>
+                    <text x="380" y="120" fill="#fff" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">Is answer</text>
+                    <text x="380" y="140" fill="#fff" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">correct?</text>
+
+                    <path d="M 380 75 L 380 30 L 520 30" fill="none" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-green)"/>
+                    <text x="450" y="20" fill="#10b981" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">YES</text>
+
+                    <rect x="530" y="0" width="100" height="60" rx="8" fill="#0b1120" stroke="#10b981" stroke-width="3"/>
+                    <text x="580" y="35" fill="#10b981" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle">score++</text>
+
+                    <path d="M 630 30 L 680 30 L 680 95" fill="none" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <path d="M 450 125 L 630 125" fill="none" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <text x="520" y="115" fill="#ef4444" font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">NO</text>
+
+                    <rect x="640" y="105" width="100" height="40" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="3"/>
+                    <text x="690" y="130" fill="#fff" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle">Next Q / END</text>
+
+                    <defs>
+                        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                            <path d="M0,0 L0,8 L8,4 z" fill="#94a3b8" />
+                        </marker>
+                        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                            <path d="M0,0 L0,8 L8,4 z" fill="#10b981" />
+                        </marker>
+                        <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                            <path d="M0,0 L0,8 L8,4 z" fill="#ef4444" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>💻 Example Project: Simple Quiz Game</h2>
+            <p>Here is what the basic version of our game looks like translated into C++.</p>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <div class="mac-dots">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <span class="code-filename">quiz_game.cpp</span>
+                    <button class="copy-btn" onclick="copyCode('code1', this)">Copy Code</button>
+                </div>
+<pre id="code1"><span class="kw">#include</span> <span class="str">&lt;iostream&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="type">int</span> <span class="fn">main</span>()
+{
+    <span class="cmt">// 1. Setup variables</span>
+    <span class="type">int</span> score <span class="op">=</span> <span class="num">0</span>;
+    <span class="type">int</span> answer;
+
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"--- Welcome to the Math Quiz! ---"</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="cmt">// 2. Question 1</span>
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Question 1: What is 2 + 2?"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="fn">cin</span> <span class="op">&gt;&gt;</span> answer;
+
+    <span class="kw">if</span>(answer <span class="op">==</span> <span class="num">4</span>)
+    {
+        score<span class="op">++</span>; <span class="cmt">// This means score = score + 1</span>
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Correct!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">else</span>
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Wrong!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+
+    <span class="cmt">// 3. Question 2</span>
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"\nQuestion 2: What is 5 + 3?"</span> <span class="op">&lt;&lt;</span> endl;
+    <span class="fn">cin</span> <span class="op">&gt;&gt;</span> answer;
+
+    <span class="kw">if</span>(answer <span class="op">==</span> <span class="num">8</span>)
+    {
+        score<span class="op">++</span>;
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Correct!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+    <span class="kw">else</span>
+    {
+        <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Wrong!"</span> <span class="op">&lt;&lt;</span> endl;
+    }
+
+    <span class="cmt">// 4. Final Output</span>
+    <span class="fn">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"\nGame Over! Your final score is: "</span> <span class="op">&lt;&lt;</span> score <span class="op">&lt;&lt;</span> <span class="str">" / 2"</span> <span class="op">&lt;&lt;</span> endl;
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+            </div>
+            
+            <h3>🔍 Step-by-Step Breakdown</h3>
+            <ul>
+                <li><code>int score = 0;</code> starts the player with zero points.</li>
+                <li>We ask the question using <code>cout</code> and listen for their reply using <code>cin &gt;&gt; answer;</code>.</li>
+                <li>The <code>if (answer == 4)</code> checks if what they typed matches the right answer. Notice the double equals sign <code>==</code> for comparing!</li>
+                <li><code>score++;</code> is a programmer's shortcut. It means "add exactly 1 point to the score variable." It's the same as typing <code>score = score + 1;</code>.</li>
+            </ul>
+        </section>
+
+        <section class="card" style="border-left-color: var(--accent-pink);">
+            <h2 style="color: var(--accent-pink); border-bottom-color: rgba(236, 72, 153, 0.2);">🧱 Real-Life Analogy: Building a House</h2>
+            <p>Programming a big project is like building a house.</p>
+            <ul>
+                <li><strong>The Algorithm</strong> is the Blueprint. You draw it before you build.</li>
+                <li><strong>Variables</strong> are your bricks and wood (your raw materials).</li>
+                <li><strong>If statements and Loops</strong> are your tools (hammer and saw) to put the materials together.</li>
+                <li><strong>Functions</strong> are the different rooms. Instead of building one massive, messy room, you organize the house into a kitchen, bedroom, etc.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>🚀 Improving the Program (Leveling Up)</h2>
+            <p>The code above works perfectly. But real programmers are always looking for ways to make their code cleaner and smarter.</p>
+            <p>If we had 100 questions, copying and pasting that <code>if/else</code> block 100 times would be terrible! How could we use what we learned in previous sessions to fix this?</p>
+            <ul>
+                <li><strong>Use Arrays:</strong> We could store all our questions in a <code>string</code> array, and all the correct answers in an <code>int</code> array.</li>
+                <li><strong>Use Loops:</strong> We could write a <code>for</code> loop that spins through the arrays, asking the questions automatically.</li>
+                <li><strong>Use Functions:</strong> We could put the quiz logic into a function called <code>playQuiz()</code> to keep our <code>main()</code> area perfectly clean.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>💻 Practice Project</h2>
+            <p>Open Visual Studio Code. It's time to build your own game!</p>
+
+            <div class="exercise-card">
+                <h4>Your Mission: Custom Quiz Game</h4>
+                <p>Create your own quiz game about anything you love (Video Games, Science, History, Sports).</p>
+                <ul>
+                    <li>It must have at least <strong>3 questions</strong>.</li>
+                    <li>It must ask the user for an answer.</li>
+                    <li>It must check if they are right or wrong using <code>if / else</code>.</li>
+                    <li>It must keep a total <code>score</code> and print it at the end.</li>
+                </ul>
+                <button class="hint-btn" onclick="toggleHint('hint1')">💡 Click for a starter template</button>
+                <div id="hint1" class="hint-content">
+                    Use the <strong>Example Project</strong> code above, but change the text inside the quotes <code>" "</code> to your own questions, and change the <code>answer == 4</code> to match whatever your correct answer is!
+                </div>
+            </div>
+        </section>
+
+        <section class="card" style="border-color: var(--accent-purple); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);">
+            <h2 style="color: var(--accent-purple); border-bottom-color: rgba(139, 92, 246, 0.2);">🔥 Challenge Project</h2>
+            <p>If you finish your 3-question quiz quickly, try to make it advanced!</p>
+            <ul>
+                <li>Add better messages based on their score. (e.g., <code>if (score == 3) { cout << "Perfect Score!"; }</code>).</li>
+                <li>Try adding a question where the answer is a word instead of a number! (Hint: You will need to make the <code>answer</code> variable a <code>string</code> instead of an <code>int</code>).</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>🏠 Homework Project</h2>
+            <p>Since this is our final session, your homework is your graduation piece! Create a brand new interactive program from scratch. Here are a few ideas:</p>
+            <ol>
+                <li><strong>A Calculator:</strong> Asks for two numbers, adds, subtracts, multiplies, and divides them.</li>
+                <li><strong>Number Guessing Game:</strong> You hardcode a secret number (e.g., <code>int secret = 7;</code>), and the user tries to guess it. Tell them if they are right or wrong!</li>
+                <li><strong>The Ultimate Quiz:</strong> Try rebuilding the quiz using a <code>for</code> loop and arrays like we discussed in the "Improving the Program" section.</li>
+            </ol>
+        </section>
+
+        <section class="card" style="background: rgba(59, 130, 246, 0.05);">
+            <h2>💭 Course Reflection</h2>
+            <p>Before we officially wrap up, take a moment to look at how much you've grown. You started by just printing "Hello TechTicket". Now you are building interactive logic games!</p>
+            <p><strong>Ask yourself:</strong></p>
+            <ul>
+                <li>What was the most interesting concept you learned?</li>
+                <li>What bug or error was the most frustrating to fix? (We all have them!)</li>
+                <li>What amazing program do you want to build next?</li>
+            </ul>
+        </section>
+
+        <section class="card card-celebration">
+            <h1 style="color: var(--accent-yellow); margin-bottom: 20px;">🎉 CONGRATULATIONS! 🎉</h1>
+            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto 20px auto;">
+                You have successfully completed the <strong>Programming Fundamentals with C++</strong> course. You now have the core skills that power the biggest tech companies in the world.
+            </p>
+            <p style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                This is just the beginning of your journey. Keep exploring, keep breaking things (and fixing them), and keep coding!
+            </p>
+        </section>
+
+        <div class="nav-buttons">
+            <button class="btn-nav btn-nav-prev" onclick="window.location.href='session9.html'">⬅ Previous Session</button>
+            <button class="btn-nav" onclick="window.location.href='session1.html'">Back to Start 🏆</button>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-message">Keep coding and building amazing things! 🚀</div>
+        <p>© TechTicket Academy — Educational material for TechTicket students only.</p>
+        <p>Redistribution or reuse of this content outside TechTicket is prohibited.</p>
+    </footer>
+
+    <script>
+        // Copy Code Function
+        function copyCode(elementId, btn) {
+            const codeEl = document.getElementById(elementId);
+            const textToCopy = codeEl.innerText;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "Copied! ✓";
+                btn.style.backgroundColor = "var(--accent-green)";
+                btn.style.color = "#fff";
+                btn.style.borderColor = "var(--accent-green)";
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "rgba(6, 182, 212, 0.1)";
+                    btn.style.color = "var(--accent-cyan)";
+                    btn.style.borderColor = "var(--accent-cyan)";
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                btn.innerText = "Error!";
+            });
+        }
+
+        // Toggle Hint Function
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.style.display === "block" || hintElement.style.display === "") {
+                hintElement.style.display = "none";
+            } else {
+                hintElement.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
